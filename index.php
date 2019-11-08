@@ -9,12 +9,36 @@
     <title>Departamentos</title>
 </head>
 <body>
-    <?php
-    $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');
-    $sent = $pdo->query('SELECT * FROM departamentos');
-    ?>
     <div class="container">
-        <div class="row">
+        <div class="row mt-3">
+            <div class="col-4 offset-4">
+                <?php
+                require __DIR__ . '/auxiliar.php';
+
+                const PAR = ['num_dep' => ''];
+
+                $errores = [];
+                $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');
+                
+                try {
+                    $args = comprobarParametros(PAR, $errores);    
+                    comprobarErrores($errores);
+                    comprobarValores($args, $errores);
+                } catch (Exception $e) {
+                    // No se hace nada
+                }
+                dibujarFormulario($args, $errores);
+                ?>
+            </div>
+        </div>
+        <?php
+        // $sent = $pdo->query('SELECT * FROM departamentos');
+        $sent = $pdo->prepare('SELECT *
+                                 FROM departamentos
+                                WHERE num_dep = :num_dep');
+        $sent->execute(['num_dep' => $args['num_dep']]);
+        ?>
+        <div class="row mt-4">
             <div class="col-8 offset-2">
                 <table class="table">
                     <thead>
