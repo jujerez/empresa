@@ -32,11 +32,14 @@
             </div>
         </div>
         <?php
-        // $sent = $pdo->query('SELECT * FROM departamentos');
-        $sent = $pdo->prepare('SELECT *
-                                 FROM departamentos
-                                WHERE num_dep = :num_dep');
-        $sent->execute(['num_dep' => $args['num_dep']]);
+        if (!empty($errores) || $args['num_dep'] === '') {
+            $sent = $pdo->query('SELECT * FROM departamentos');
+        } else {
+            $sent = $pdo->prepare('SELECT *
+                                     FROM departamentos
+                                    WHERE num_dep = :num_dep');
+            $sent->execute(['num_dep' => $args['num_dep']]);
+        }
         ?>
         <div class="row mt-4">
             <div class="col-8 offset-2">

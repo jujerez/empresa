@@ -18,12 +18,12 @@ function comprobarValores($args, &$errores)
 {
     extract($args);
 
-    if ($num_dep === '') {
-        $errores['num_dep'] = 'El campo número es obligatorio.';
-    } elseif (!ctype_digit($num_dep)) {
-        $errores['num_dep'] = 'El número de departamento debe ser un número';
-    } elseif (mb_strlen($num_dep) > 2) {
-        $errores['num_dep'] = 'El número no puede tener más de dos dígitos.';
+    if ($num_dep !== '') {
+        if (!ctype_digit($num_dep)) {
+            $errores['num_dep'] = 'El número de departamento debe ser un número entero positivo.';
+        } elseif (mb_strlen($num_dep) > 2) {
+            $errores['num_dep'] = 'El número no puede tener más de dos dígitos.';
+        }
     }
 
     comprobarErrores($errores);
