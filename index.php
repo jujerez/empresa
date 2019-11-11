@@ -15,7 +15,11 @@
                 <?php
                 require __DIR__ . '/auxiliar.php';
 
-                const PAR = ['num_dep' => '', 'dnombre' => ''];
+                const PAR = [
+                    'num_dep' => '',
+                    'dnombre' => '',
+                    'localidad' => '',
+                ];
 
                 $errores = [];
                 $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');
@@ -41,6 +45,10 @@
         if ($args['dnombre'] !== '' && !isset($errores['dnombre'])) {
             $sql .= ' AND dnombre ILIKE :dnombre';
             $execute['dnombre'] = '%' . $args['dnombre'] . '%';
+        }
+        if ($args['localidad'] !== '' && !isset($errores['localidad'])) {
+            $sql .= ' AND localidad ILIKE :localidad';
+            $execute['localidad'] = '%' . $args['localidad'] . '%';
         }
         $sent = $pdo->prepare("SELECT COUNT(*) $sql");
         $sent->execute($execute);

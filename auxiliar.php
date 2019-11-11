@@ -32,6 +32,12 @@ function comprobarValores($args, &$errores)
         }
     }
 
+    if ($localidad !== '') {
+        if (mb_strlen($localidad) > 255) {
+            $errores['localidad'] = 'La localidad no puede tener más de 255 caracteres.';
+        }
+    }
+
     comprobarErrores($errores);
 }
 
@@ -91,6 +97,14 @@ function dibujarFormulario($args, $errores)
                    id="dnombre" name="dnombre"
                    value="<?= $dnombre ?>">
             <?= mensajeError('dnombre', $errores) ?>
+        </div>
+        <div class="form-group">
+            <label for="localidad">Localidad:</label>
+            <input type="text"
+                   class="form-control <?= valido('localidad', $errores) ?>"
+                   id="localidad" name="localidad"
+                   value="<?= $localidad ?>">
+            <?= mensajeError('localidad', $localidad) ?>
         </div>
         <button type="submit" class="btn btn-primary">
             Buscar
