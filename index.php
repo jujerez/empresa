@@ -15,7 +15,7 @@
                 <?php
                 require __DIR__ . '/auxiliar.php';
 
-                const PAR = ['num_dep' => ''];
+                const PAR = ['num_dep' => '', 'dnombre' => ''];
 
                 $errores = [];
                 $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');
@@ -32,35 +32,60 @@
             </div>
         </div>
         <?php
-        if (!empty($errores) || $args['num_dep'] === '') {
-            $sent = $pdo->query('SELECT * FROM departamentos');
-        } else {
-            $sent = $pdo->prepare('SELECT *
-                                     FROM departamentos
-                                    WHERE num_dep = :num_dep');
-            $sent->execute(['num_dep' => $args['num_dep']]);
+        $sql = 'FROM departamentos WHERE true';
+        $execute = [];
+        if ($args['num_dep'] !== '' && !isset($errores['num_dep'])) {
+            $sql .= ' AND num_dep = :num_dep';
+            $execute['num_dep'] = $args['num_dep'];
         }
+        if ($args['dnombre'] !== '' && !isset($errores['dnombre'])) {
+            $sql .= ' AND dnombre ILIKE :dnombre';
+            $execute['dnombre'] = '%' . $args['dnombre'] . '%';
+        }
+        $sent = $pdo->prepare("SELECT COUNT(*) $sql");
+        $sent->execute($execute);
+        $count = $sent->fetchColumn();
+        $sent = $pdo->prepare("SELECT * $sql");
+        $sent->execute($execute);
         ?>
-        <div class="row mt-4">
-            <div class="col-8 offset-2">
-                <table class="table">
-                    <thead>
-                        <th scope="col">Número</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Localidad</th>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($sent as $fila): ?>
-                            <tr scope="row">
-                                <td><?= $fila['num_dep'] ?></td>
-                                <td><?= $fila['dnombre'] ?></td>
-                                <td><?= $fila['localidad'] ?></td>
-                            </tr>
-                        <?php endforeach ?>
-                    </tbody>
-                </table>
+        <?php if ($count == 0): ?>
+            <div class="row mt-3">
+                <div class="col-8 offset-2">
+                    <div class="alert alert-danger" role="alert">
+                        No se ha encontrado ninguna fila que coincida.
+                    </div>
+                </div>
             </div>
-        </div>
+        <?php elseif (isset($errores[0])): ?>
+            <div class="row mt-3">
+                <div class="col-8 offset-2">
+                    <div class="alert alert-danger" role="alert">
+                        <?= $errores[0] ?>
+                    </div>
+                </div>
+            </div>
+        <?php else: ?>
+            <div class="row mt-4">
+                <div class="col-8 offset-2">
+                    <table class="table">
+                        <thead>
+                            <th scope="col">Número</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Localidad</th>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($sent as $fila): ?>
+                                <tr scope="row">
+                                    <td><?= $fila['num_dep'] ?></td>
+                                    <td><?= $fila['dnombre'] ?></td>
+                                    <td><?= $fila['localidad'] ?></td>
+                                </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <?php endif ?>
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

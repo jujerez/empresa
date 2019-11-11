@@ -26,6 +26,12 @@ function comprobarValores($args, &$errores)
         }
     }
 
+    if ($dnombre !== '') {
+        if (mb_strlen($dnombre) > 255) {
+            $errores['dnombre'] = 'El nombre del departamento no puede tener más de 255 caracteres.';
+        }
+    }
+
     comprobarErrores($errores);
 }
 
@@ -78,8 +84,19 @@ function dibujarFormulario($args, $errores)
                    value="<?= $num_dep ?>">
             <?= mensajeError('num_dep', $errores) ?>
         </div>
+        <div class="form-group">
+            <label for="dnombre">Nombre:</label>
+            <input type="text"
+                   class="form-control <?= valido('dnombre', $errores) ?>"
+                   id="dnombre" name="dnombre"
+                   value="<?= $dnombre ?>">
+            <?= mensajeError('dnombre', $errores) ?>
+        </div>
         <button type="submit" class="btn btn-primary">
             Buscar
+        </button>
+        <button type="reset" class="btn btn-secondary">
+            Limpiar
         </button>
     </form>
     <?php
