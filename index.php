@@ -15,17 +15,29 @@
                 <?php
                 require __DIR__ . '/auxiliar.php';
 
+                const TIPO_ENTERO = 0;
+                const TIPO_CADENA = 1;
+
                 const PAR = [
-                    'num_dep' => '',
-                    'dnombre' => '',
-                    'localidad' => '',
+                    'num_dep' => [
+                        'def' => '',
+                        'tipo' => TIPO_ENTERO,
+                    ],
+                    'dnombre' => [
+                        'def' => '',
+                        'tipo' => TIPO_CADENA,
+                    ],
+                    'localidad' => [
+                        'def' => '',
+                        'tipo' => TIPO_CADENA,
+                    ],
                 ];
 
                 $errores = [];
                 $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');
                 
                 try {
-                    $args = comprobarParametros(PAR, $errores);    
+                    $args = comprobarParametros(PAR, $errores);
                     comprobarErrores($errores);
                     comprobarValores($args, $errores);
                 } catch (Exception $e) {
@@ -38,23 +50,10 @@
         <?php
         $sql = 'FROM departamentos WHERE true';
         $execute = [];
-        if ($args['num_dep'] !== '' && !isset($errores['num_dep'])) {
-            $sql .= ' AND num_dep = :num_dep';
-            $execute['num_dep'] = $args['num_dep'];
+        foreach (PAR as $k => $v) {
+            insertarFiltro($sql, $execute, $k, $args, PAR, $errores);    
         }
-        if ($args['dnombre'] !== '' && !isset($errores['dnombre'])) {
-            $sql .= ' AND dnombre ILIKE :dnombre';
-            $execute['dnombre'] = '%' . $args['dnombre'] . '%';
-        }
-        if ($args['localidad'] !== '' && !isset($errores['localidad'])) {
-            $sql .= ' AND localidad ILIKE :localidad';
-            $execute['localidad'] = '%' . $args['localidad'] . '%';
-        }
-        $sent = $pdo->prepare("SELECT COUNT(*) $sql");
-        $sent->execute($execute);
-        $count = $sent->fetchColumn();
-        $sent = $pdo->prepare("SELECT * $sql");
-        $sent->execute($execute);
+        [$sent, $count] = ejecutarConsulta($sql, $execute, $pdo);
         ?>
         <?php if ($count == 0): ?>
             <div class="row mt-3">

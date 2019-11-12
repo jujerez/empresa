@@ -2,7 +2,10 @@
 
 function comprobarParametros($par, &$errores)
 {
-    $res = $par;
+    $res = [];
+    foreach ($par as $k => $v) {
+        $res[$k] = $v['def'];
+    }
     if (!empty($_GET)) {
         if (empty(array_diff_key($par, $_GET)) &&
             empty(array_diff_key($_GET, $par))) {
@@ -114,4 +117,27 @@ function dibujarFormulario($args, $errores)
         </button>
     </form>
     <?php
+}
+
+function insertarFiltro(&$sql, &$execute, $campo, $args, $par, $errores)
+{
+    if ($args[$campo] !== '' && !isset($errores[$campo])) {
+        if ($par[$campo]['tipo'] === TIPO_ENTERO) {
+            $sql .= " AND $campo = :$campo";
+            $execute[$campo] = $args[$campo];
+        } else {
+            $sql .= " AND $campo ILIKE :$campo";
+            $execute[$campo] = '%' . $args[$campo] . '%';
+        }
+    }
+}
+
+function ejecutarConsulta($sql, $execute, $pdo)
+{
+    $sent = $pdo->prepare("SELECT COUNT(*) $sql");
+    $sent->execute($execute);
+    $count = $sent->fetchColumn();
+    $sent = $pdo->prepare("SELECT * $sql");
+    $sent->execute($execute);
+    return [$sent, $count];
 }
