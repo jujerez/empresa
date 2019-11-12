@@ -37,22 +37,14 @@
         if (isset($_POST['id'], $_POST['op'])) {
             $id = trim($_POST['id']);
             if ($_POST['op'] == 'borrar') {
-                $sent = $pdo->prepare('DELETE
-                                         FROM departamentos
-                                        WHERE id = :id');
-                $sent->execute(['id' => $id]);
-                if ($sent->rowCount() === 1) {
-                    alert('Fila borrada con éxito.', 'success');
-                } else {
-                    alert('Ha ocurrido un error inesperado.', 'danger');
-                }
+                borrarFila($pdo, $id);
             }
         }
 
         $errores = [];
         $args = comprobarParametros(PAR, $errores);
         comprobarValores($args, $errores);
-        dibujarFormulario($args, PAR, $errores);
+        dibujarFormularioIndex($args, PAR, $errores);
         $sql = 'FROM departamentos WHERE true';
         $execute = [];
         foreach (PAR as $k => $v) {
@@ -61,6 +53,13 @@
         [$sent, $count] = ejecutarConsulta($sql, $execute, $pdo);
         dibujarTabla($sent, $count, PAR, $errores);
         ?>
+        <div class="row">
+            <div class="col text-center">
+                <a href="insertar.php" class="btn btn-info" role="button">
+                    Insertar
+                </a>
+            </div>
+        </div>
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

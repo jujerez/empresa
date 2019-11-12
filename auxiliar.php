@@ -84,23 +84,12 @@ function valido($campo, $errores)
     }
 }
 
-function dibujarFormulario($args, $par, $errores)
+function dibujarFormularioIndex($args, $par, $errores)
 { ?>
     <div class="row mt-3">
         <div class="col-4 offset-4">
             <form action="" method="get">
-                <?php foreach ($par as $k => $v): ?>
-                    <?php if (isset($par[$k]['def'])): ?>
-                        <div class="form-group">
-                            <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
-                            <input type="text"
-                                   class="form-control <?= valido($k, $errores) ?>"
-                                   id="<?= $k ?>" name="<?= $k ?>"
-                                   value="<?= $args[$k] ?>">
-                            <?= mensajeError($k, $errores) ?>
-                        </div>
-                    <?php endif ?>
-                <?php endforeach ?>
+                <?php dibujarElementoFormulario($args, $par, $errores) ?>
                 <button type="submit" class="btn btn-primary">
                     Buscar
                 </button>
@@ -111,6 +100,37 @@ function dibujarFormulario($args, $par, $errores)
         </div>
     </div>
     <?php
+}
+
+function dibujarFormularioInsertar($args, $par, $errores)
+{ ?>
+    <div class="row mt-3">
+        <div class="col">
+            <form action="" method="post">
+                <?php dibujarElementoFormulario($args, $par, $errores) ?>
+                <button type="submit" class="btn btn-primary">
+                    Insertar
+                </button>
+            </form>
+        </div>
+    </div>
+    <?php
+}
+
+function dibujarElementoFormulario($args, $par, $errores)
+{
+    foreach ($par as $k => $v): ?>
+        <?php if (isset($par[$k]['def'])): ?>
+            <div class="form-group">
+                <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
+                <input type="text"
+                       class="form-control <?= valido($k, $errores) ?>"
+                       id="<?= $k ?>" name="<?= $k ?>"
+                       value="<?= $args[$k] ?>">
+                <?= mensajeError($k, $errores) ?>
+            </div>
+        <?php endif ?><?php
+    endforeach;
 }
 
 function insertarFiltro(&$sql, &$execute, $campo, $args, $par, $errores)
@@ -186,4 +206,17 @@ function alert($mensaje, $tipo)
             </div>
         </div>
     </div><?php
+}
+
+function borrarFila($pdo, $id)
+{
+    $sent = $pdo->prepare('DELETE
+                                FROM departamentos
+                            WHERE id = :id');
+    $sent->execute(['id' => $id]);
+    if ($sent->rowCount() === 1) {
+        alert('Fila borrada con éxito.', 'success');
+    } else {
+        alert('Ha ocurrido un error inesperado.', 'danger');
+    }
 }
