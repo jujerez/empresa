@@ -10,89 +10,40 @@
 </head>
 <body>
     <div class="container">
-        <div class="row mt-3">
-            <div class="col-4 offset-4">
-                <?php
-                require __DIR__ . '/auxiliar.php';
-
-                const TIPO_ENTERO = 0;
-                const TIPO_CADENA = 1;
-
-                const PAR = [
-                    'num_dep' => [
-                        'def' => '',
-                        'tipo' => TIPO_ENTERO,
-                    ],
-                    'dnombre' => [
-                        'def' => '',
-                        'tipo' => TIPO_CADENA,
-                    ],
-                    'localidad' => [
-                        'def' => '',
-                        'tipo' => TIPO_CADENA,
-                    ],
-                ];
-
-                $errores = [];
-                $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');
-                
-                try {
-                    $args = comprobarParametros(PAR, $errores);
-                    comprobarErrores($errores);
-                    comprobarValores($args, $errores);
-                } catch (Exception $e) {
-                    // No se hace nada
-                }
-                dibujarFormulario($args, $errores);
-                ?>
-            </div>
-        </div>
         <?php
+        require __DIR__ . '/auxiliar.php';
+
+        const TIPO_ENTERO = 0;
+        const TIPO_CADENA = 1;
+
+        const PAR = [
+            'num_dep' => [
+                'def' => '',
+                'tipo' => TIPO_ENTERO,
+            ],
+            'dnombre' => [
+                'def' => '',
+                'tipo' => TIPO_CADENA,
+            ],
+            'localidad' => [
+                'def' => '',
+                'tipo' => TIPO_CADENA,
+            ],
+        ];
+
+        $errores = [];
+        $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');                
+        $args = comprobarParametros(PAR, $errores);
+        comprobarValores($args, $errores);
+        dibujarFormulario($args, $errores);
         $sql = 'FROM departamentos WHERE true';
         $execute = [];
         foreach (PAR as $k => $v) {
             insertarFiltro($sql, $execute, $k, $args, PAR, $errores);    
         }
         [$sent, $count] = ejecutarConsulta($sql, $execute, $pdo);
+        dibujarTabla($sent, $count, $errores);
         ?>
-        <?php if ($count == 0): ?>
-            <div class="row mt-3">
-                <div class="col-8 offset-2">
-                    <div class="alert alert-danger" role="alert">
-                        No se ha encontrado ninguna fila que coincida.
-                    </div>
-                </div>
-            </div>
-        <?php elseif (isset($errores[0])): ?>
-            <div class="row mt-3">
-                <div class="col-8 offset-2">
-                    <div class="alert alert-danger" role="alert">
-                        <?= $errores[0] ?>
-                    </div>
-                </div>
-            </div>
-        <?php else: ?>
-            <div class="row mt-4">
-                <div class="col-8 offset-2">
-                    <table class="table">
-                        <thead>
-                            <th scope="col">Número</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Localidad</th>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($sent as $fila): ?>
-                                <tr scope="row">
-                                    <td><?= $fila['num_dep'] ?></td>
-                                    <td><?= $fila['dnombre'] ?></td>
-                                    <td><?= $fila['localidad'] ?></td>
-                                </tr>
-                            <?php endforeach ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        <?php endif ?>
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
