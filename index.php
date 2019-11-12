@@ -20,14 +20,15 @@
             'num_dep' => [
                 'def' => '',
                 'tipo' => TIPO_ENTERO,
+                'etiqueta' => 'Número',
             ],
             'dnombre' => [
                 'def' => '',
                 'tipo' => TIPO_CADENA,
+                'etiqueta' => 'Nombre',
             ],
             'localidad' => [
-                'def' => '',
-                'tipo' => TIPO_CADENA,
+                'etiqueta' => 'Localidad',
             ],
         ];
 
@@ -35,14 +36,14 @@
         $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');                
         $args = comprobarParametros(PAR, $errores);
         comprobarValores($args, $errores);
-        dibujarFormulario($args, $errores);
+        dibujarFormulario($args, PAR, $errores);
         $sql = 'FROM departamentos WHERE true';
         $execute = [];
         foreach (PAR as $k => $v) {
             insertarFiltro($sql, $execute, $k, $args, PAR, $errores);    
         }
         [$sent, $count] = ejecutarConsulta($sql, $execute, $pdo);
-        dibujarTabla($sent, $count, $errores);
+        dibujarTabla($sent, $count, PAR, $errores);
         ?>
     </div>
     <!-- Optional JavaScript -->

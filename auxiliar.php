@@ -4,11 +4,13 @@ function comprobarParametros($par, &$errores)
 {
     $res = [];
     foreach ($par as $k => $v) {
-        $res[$k] = $v['def'];
+        if (isset($v['def'])) {
+            $res[$k] = $v['def'];
+        }
     }
     if (!empty($_GET)) {
-        if (empty(array_diff_key($par, $_GET)) &&
-            empty(array_diff_key($_GET, $par))) {
+        if (empty(array_diff_key($res, $_GET)) &&
+            empty(array_diff_key($_GET, $res))) {
             $res = array_map('trim', $_GET);
         } else {
             $errores[] = 'Los parámetros recibidos no son los correctos.';
@@ -82,37 +84,23 @@ function valido($campo, $errores)
     }
 }
 
-function dibujarFormulario($args, $errores)
-{
-    extract($args);
-    ?>
+function dibujarFormulario($args, $par, $errores)
+{ ?>
     <div class="row mt-3">
         <div class="col-4 offset-4">
             <form action="" method="get">
-                <div class="form-group">
-                    <label for="num_dep">Número:</label>
-                    <input type="text"
-                           class="form-control <?= valido('num_dep', $errores) ?>"
-                           id="num_dep" name="num_dep"
-                           value="<?= $num_dep ?>">
-                    <?= mensajeError('num_dep', $errores) ?>
-                </div>
-                <div class="form-group">
-                    <label for="dnombre">Nombre:</label>
-                    <input type="text"
-                           class="form-control <?= valido('dnombre', $errores) ?>"
-                           id="dnombre" name="dnombre"
-                           value="<?= $dnombre ?>">
-                    <?= mensajeError('dnombre', $errores) ?>
-                </div>
-                <div class="form-group">
-                    <label for="localidad">Localidad:</label>
-                    <input type="text"
-                           class="form-control <?= valido('localidad', $errores) ?>"
-                           id="localidad" name="localidad"
-                           value="<?= $localidad ?>">
-                    <?= mensajeError('localidad', $localidad) ?>
-                </div>
+                <?php foreach ($par as $k => $v): ?>
+                    <?php if (isset($par[$k]['def'])): ?>
+                        <div class="form-group">
+                            <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
+                            <input type="text"
+                                   class="form-control <?= valido($k, $errores) ?>"
+                                   id="<?= $k ?>" name="<?= $k ?>"
+                                   value="<?= $args[$k] ?>">
+                            <?= mensajeError($k, $errores) ?>
+                        </div>
+                    <?php endif ?>
+                <?php endforeach ?>
                 <button type="submit" class="btn btn-primary">
                     Buscar
                 </button>
@@ -127,7 +115,7 @@ function dibujarFormulario($args, $errores)
 
 function insertarFiltro(&$sql, &$execute, $campo, $args, $par, $errores)
 {
-    if ($args[$campo] !== '' && !isset($errores[$campo])) {
+    if (isset($par[$campo]['def']) && $args[$campo] !== '' && !isset($errores[$campo])) {
         if ($par[$campo]['tipo'] === TIPO_ENTERO) {
             $sql .= " AND $campo = :$campo";
             $execute[$campo] = $args[$campo];
@@ -148,7 +136,7 @@ function ejecutarConsulta($sql, $execute, $pdo)
     return [$sent, $count];
 }
 
-function dibujarTabla($sent, $count, $errores)
+function dibujarTabla($sent, $count, $par, $errores)
 { ?>
     <?php if ($count == 0): ?>
         <div class="row mt-3">
@@ -171,16 +159,16 @@ function dibujarTabla($sent, $count, $errores)
             <div class="col-8 offset-2">
                 <table class="table">
                     <thead>
-                        <th scope="col">Número</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Localidad</th>
+                        <?php foreach ($par as $k => $v): ?>
+                            <th scope="col"><?= $par[$k]['etiqueta'] ?></th>    
+                        <?php endforeach ?>
                     </thead>
                     <tbody>
                         <?php foreach ($sent as $fila): ?>
                             <tr scope="row">
-                                <td><?= $fila['num_dep'] ?></td>
-                                <td><?= $fila['dnombre'] ?></td>
-                                <td><?= $fila['localidad'] ?></td>
+                                <?php foreach ($par as $k => $v): ?>
+                                    <td><?= $fila[$k] ?></td>
+                                <?php endforeach ?>
                             </tr>
                         <?php endforeach ?>
                     </tbody>
