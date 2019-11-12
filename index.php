@@ -31,9 +31,25 @@
                 'etiqueta' => 'Localidad',
             ],
         ];
+        
+        $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');                
+
+        if (isset($_POST['id'], $_POST['op'])) {
+            $id = trim($_POST['id']);
+            if ($_POST['op'] == 'borrar') {
+                $sent = $pdo->prepare('DELETE
+                                         FROM departamentos
+                                        WHERE id = :id');
+                $sent->execute(['id' => $id]);
+                if ($sent->rowCount() === 1) {
+                    alert('Fila borrada con éxito.', 'success');
+                } else {
+                    alert('Ha ocurrido un error inesperado.', 'danger');
+                }
+            }
+        }
 
         $errores = [];
-        $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');                
         $args = comprobarParametros(PAR, $errores);
         comprobarValores($args, $errores);
         dibujarFormulario($args, PAR, $errores);

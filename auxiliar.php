@@ -139,21 +139,9 @@ function ejecutarConsulta($sql, $execute, $pdo)
 function dibujarTabla($sent, $count, $par, $errores)
 { ?>
     <?php if ($count == 0): ?>
-        <div class="row mt-3">
-            <div class="col-8 offset-2">
-                <div class="alert alert-danger" role="alert">
-                    No se ha encontrado ninguna fila que coincida.
-                </div>
-            </div>
-        </div>
+        <?php alert('No se ha encontrado ninguna fila que coincida.', 'danger') ?>        <div class="row mt-3">
     <?php elseif (isset($errores[0])): ?>
-        <div class="row mt-3">
-            <div class="col-8 offset-2">
-                <div class="alert alert-danger" role="alert">
-                    <?= $errores[0] ?>
-                </div>
-            </div>
-        </div>
+        <?php alert($errores[0], 'danger') ?>
     <?php else: ?>
         <div class="row mt-4">
             <div class="col-8 offset-2">
@@ -162,6 +150,7 @@ function dibujarTabla($sent, $count, $par, $errores)
                         <?php foreach ($par as $k => $v): ?>
                             <th scope="col"><?= $par[$k]['etiqueta'] ?></th>    
                         <?php endforeach ?>
+                        <th scope="col">Acciones</th>
                     </thead>
                     <tbody>
                         <?php foreach ($sent as $fila): ?>
@@ -169,6 +158,13 @@ function dibujarTabla($sent, $count, $par, $errores)
                                 <?php foreach ($par as $k => $v): ?>
                                     <td><?= $fila[$k] ?></td>
                                 <?php endforeach ?>
+                                <td>
+                                    <form action="" method="post">
+                                        <input type="hidden" name="op" value="borrar">
+                                        <input type="hidden" name="id" value="<?= $fila['id'] ?>">
+                                        <button type="submit" class="btn btn-sm btn-danger">Borrar</button>
+                                    </form>
+                                </td>
                             </tr>
                         <?php endforeach ?>
                     </tbody>
@@ -176,4 +172,18 @@ function dibujarTabla($sent, $count, $par, $errores)
             </div>
         </div>
     <?php endif;
+}
+
+function alert($mensaje, $tipo)
+{ ?>
+    <div class="row mt-3">
+        <div class="col-8 offset-2">
+            <div class="alert alert-<?= $tipo ?> alert-dismissible fade show" role="alert">
+                <?= $mensaje ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div><?php
 }
