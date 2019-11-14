@@ -5,7 +5,8 @@ CREATE TABLE departamentos
     id        bigserial    PRIMARY KEY
   , num_dep   numeric(2)   NOT NULL UNIQUE
   , dnombre   varchar(255) NOT NULL
-  , localidad varchar(255)
+  , localidad varchar(255) CONSTRAINT ck_localidad_no_vacia
+                           CHECK (localidad != '')
 );
 
 DROP TABLE IF EXISTS empleados CASCADE;

@@ -32,7 +32,7 @@
             ],
         ];
         
-        $pdo = new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');                
+        $pdo = conectar();
 
         if (isset($_POST['id'], $_POST['op'])) {
             $id = trim($_POST['id']);
@@ -43,7 +43,7 @@
 
         $errores = [];
         $args = comprobarParametros(PAR, $errores);
-        comprobarValores($args, $errores);
+        comprobarValoresIndex($args, $errores);
         dibujarFormularioIndex($args, PAR, $errores);
         $sql = 'FROM departamentos WHERE true';
         $execute = [];

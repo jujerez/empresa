@@ -8,10 +8,12 @@ function comprobarParametros($par, &$errores)
             $res[$k] = $v['def'];
         }
     }
-    if (!empty($_GET)) {
-        if (empty(array_diff_key($res, $_GET)) &&
-            empty(array_diff_key($_GET, $res))) {
-            $res = array_map('trim', $_GET);
+    $peticion = peticion();
+    if ((es_GET() && !empty($peticion)) || es_POST()) {
+        if ((es_GET() || es_POST() && !empty($peticion))
+            && empty(array_diff_key($res, $peticion))
+            && empty(array_diff_key($peticion, $res))) {
+            $res = array_map('trim', $peticion);
         } else {
             $errores[] = 'Los parámetros recibidos no son los correctos.';
         }
@@ -19,7 +21,7 @@ function comprobarParametros($par, &$errores)
     return $res;
 }
 
-function comprobarValores($args, &$errores)
+function comprobarValoresIndex($args, &$errores)
 {
     if (!empty($errores)) {
         return;
@@ -48,6 +50,51 @@ function comprobarValores($args, &$errores)
     }
 }
 
+function comprobarValoresInsertar(&$args, $pdo, &$errores)
+{
+    if (!empty($errores) || empty($_POST)) {
+        return;
+    }
+
+    extract($args);
+
+    if (isset($args['num_dep'])) {
+        if ($num_dep === '') {
+            $errores['num_dep'] = 'El número de departamento es obligatorio.';
+        } elseif (!ctype_digit($num_dep)) {
+            $errores['num_dep'] = 'El número de departamento debe ser un número entero positivo.';
+        } elseif (mb_strlen($num_dep) > 2) {
+            $errores['num_dep'] = 'El número no puede tener más de dos dígitos.';
+        } else {
+            $sent = $pdo->prepare('SELECT COUNT(*)
+                                     FROM departamentos
+                                    WHERE num_dep = :num_dep');
+            $sent->execute(['num_dep' => $num_dep]);
+            if ($sent->fetchColumn() > 0) {
+                $errores['num_dep'] = 'Ese número de departamento ya existe.';
+            }
+        }
+    }
+
+    if (isset($args['dnombre'])) {
+        if ($dnombre === '') {
+            $errores['dnombre'] = 'El nombre del departamento es obligatorio.';
+        } elseif (mb_strlen($dnombre) > 255) {
+            $errores['dnombre'] = 'El nombre del departamento no puede tener más de 255 caracteres.';
+        }
+    }
+
+    if (isset($args['localidad'])) {
+        if ($localidad !== '') {
+            if (mb_strlen($localidad) > 255) {
+                $errores['localidad'] = 'La localidad no puede tener más de 255 caracteres.';
+            }
+        } else {
+            $args['localidad'] = null;
+        }
+    }
+}
+
 function mensajeError($campo, $errores)
 {
     if (isset($errores[$campo])) {
@@ -61,13 +108,6 @@ function mensajeError($campo, $errores)
     }
 }
 
-function comprobarErrores($errores)
-{
-    if (empty($_GET) || !empty($errores)) {
-        throw new Exception();
-    }
-}
-
 function selected($op, $o)
 {
     return $op == $o ? 'selected' : '';
@@ -75,9 +115,10 @@ function selected($op, $o)
 
 function valido($campo, $errores)
 {
+    $peticion = peticion();
     if (isset($errores[$campo])) {
         return 'is-invalid';
-    } elseif (!empty($_GET)) {
+    } elseif (!empty($peticion)) {
         return 'is-valid';
     } else {
         return '';
@@ -219,4 +260,29 @@ function borrarFila($pdo, $id)
     } else {
         alert('Ha ocurrido un error inesperado.', 'danger');
     }
+}
+
+function conectar()
+{
+    return new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');
+}
+
+function es_GET()
+{
+    return metodo() === 'GET';
+}
+
+function es_POST()
+{
+    return metodo() === 'POST';
+}
+
+function metodo()
+{
+    return $_SERVER['REQUEST_METHOD'];
+}
+
+function peticion()
+{
+    return metodo() === 'GET' ? $_GET : $_POST;
 }

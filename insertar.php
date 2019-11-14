@@ -34,6 +34,15 @@
         ];
         $errores = [];
         $args = comprobarParametros(PAR, $errores);
+        $pdo = conectar();
+        comprobarValoresInsertar($args, $pdo, $errores);
+        if (es_POST() && empty($errores)) {
+            $sent = $pdo->prepare('INSERT
+                                     INTO departamentos (num_dep, dnombre, localidad)
+                                   VALUES (:num_dep, :dnombre, :localidad)');
+            $sent->execute($args);
+            header('Location: index.php');
+        }
         dibujarFormularioInsertar($args, PAR, $errores);
         ?>
         <!-- Optional JavaScript -->
