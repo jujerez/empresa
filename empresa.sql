@@ -25,3 +25,8 @@ INSERT INTO departamentos (num_dep, dnombre, localidad)
 VALUES (10, 'Contabilidad', 'Sanlúcar')
      , (20, 'Facturación', 'Chipiona')
      , (30, 'Ventas', 'Trebujena');
+
+INSERT INTO empleados (num_emp, nombre, salario, departamento_id)
+VALUES (5555, 'Pepe', 1400, 1)
+     , (6666, 'Juan', 1700, 2)
+     , (8888, 'María', 2100, 2);

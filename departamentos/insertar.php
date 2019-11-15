@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>Modificar un departamento</title>
+    <title>Insertar un nuevo departamento</title>
 </head>
 <body>
     <div class="container">       
         <?php
+        require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
-       
+    
         const PAR = [
             'num_dep' => [
                 'def' => '',
@@ -32,35 +33,16 @@
 
         $errores = [];
         $args = comprobarParametros(PAR, REQ_POST, $errores);
-        if (!isset($_GET['id'])) {
-            header('Location: index.php?modificar-error=1');
-            return;
-        }
-        $id = trim($_GET['id']);
         $pdo = conectar();
-        comprobarValores($args, $id, $pdo, $errores);
+        comprobarValores($args, null, $pdo, $errores);
         if (es_POST() && empty($errores)) {
-            $sent = $pdo->prepare('UPDATE departamentos
-                                      SET num_dep = :num_dep
-                                        , dnombre = :dnombre
-                                        , localidad = :localidad
-                                    WHERE id = :id');
-            $args['id'] = $id;
+            $sent = $pdo->prepare('INSERT
+                                     INTO departamentos (num_dep, dnombre, localidad)
+                                   VALUES (:num_dep, :dnombre, :localidad)');
             $sent->execute($args);
-            header('Location: index.php?modificado=1');
-            return;
+            header('Location: index.php?insertado=1');
         }
-        if (es_GET()) {
-            $sent = $pdo->prepare('SELECT *
-                                     FROM departamentos
-                                    WHERE id = :id');
-            $sent->execute(['id' => $id]);
-            if (($args = $sent->fetch(PDO::FETCH_ASSOC)) === false) {
-                header('Location: index.php?modificar-error=1');
-                return;
-            }
-        }
-        dibujarFormulario($args, PAR, 'Modificar', $errores);
+        dibujarFormulario($args, PAR, 'Insertar', $errores);
         ?>
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->

@@ -11,6 +11,7 @@
 <body>
     <div class="container">
         <?php
+        require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
 
         const PAR = [
@@ -34,7 +35,7 @@
         if (es_POST()) {
             if (isset($_POST['id'])) {
                 $id = trim($_POST['id']);
-                borrarFila($pdo, $id);
+                borrarFila($pdo, 'departamentos', $id);
             } elseif (isset($_GET['id'])) {
                 // Modificar
             }
@@ -65,7 +66,7 @@
         ?>
         <div class="row">
             <div class="col text-center">
-                <a href="insertar.php" class="btn btn-info" role="button">
+                <a href="/departamentos/insertar.php" class="btn btn-info" role="button">
                     Insertar
                 </a>
             </div>

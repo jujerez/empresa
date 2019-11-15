@@ -10,6 +10,7 @@
 <body>
     <div class="container">       
         <?php
+        require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
     
         const PAR = [
