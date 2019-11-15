@@ -34,15 +34,17 @@
         
         $pdo = conectar();
 
-        if (isset($_POST['id'], $_POST['op'])) {
-            $id = trim($_POST['id']);
-            if ($_POST['op'] == 'borrar') {
+        if (es_POST()) {
+            if (isset($_POST['id'])) {
+                $id = trim($_POST['id']);
                 borrarFila($pdo, $id);
+            } elseif (isset($_GET['id'])) {
+                // Modificar
             }
         }
 
         $errores = [];
-        $args = comprobarParametros(PAR, $errores);
+        $args = comprobarParametros(PAR, REQ_GET, $errores);
         comprobarValoresIndex($args, $errores);
         dibujarFormularioIndex($args, PAR, $errores);
         $sql = 'FROM departamentos WHERE true';

@@ -33,7 +33,7 @@
             ],
         ];
         $errores = [];
-        $args = comprobarParametros(PAR, $errores);
+        $args = comprobarParametros(PAR, REQ_POST, $errores);
         $pdo = conectar();
         comprobarValoresInsertar($args, $pdo, $errores);
         if (es_POST() && empty($errores)) {

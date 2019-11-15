@@ -1,6 +1,9 @@
 <?php
 
-function comprobarParametros($par, &$errores)
+const REQ_GET = 'GET';
+const REQ_POST = 'POST';
+
+function comprobarParametros($par, $req, &$errores)
 {
     $res = [];
     foreach ($par as $k => $v) {
@@ -8,9 +11,9 @@ function comprobarParametros($par, &$errores)
             $res[$k] = $v['def'];
         }
     }
-    $peticion = peticion();
-    if ((es_GET() && !empty($peticion)) || es_POST()) {
-        if ((es_GET() || es_POST() && !empty($peticion))
+    $peticion = peticion($req);
+    if ((es_GET($req) && !empty($peticion)) || es_POST($req)) {
+        if ((es_GET($req) || es_POST($req) && !empty($peticion))
             && empty(array_diff_key($res, $peticion))
             && empty(array_diff_key($peticion, $res))) {
             $res = array_map('trim', $peticion);
@@ -221,7 +224,6 @@ function dibujarTabla($sent, $count, $par, $errores)
                                 <?php endforeach ?>
                                 <td>
                                     <form action="" method="post">
-                                        <input type="hidden" name="op" value="borrar">
                                         <input type="hidden" name="id" value="<?= $fila['id'] ?>">
                                         <button type="submit" class="btn btn-sm btn-danger">Borrar</button>
                                     </form>
@@ -267,14 +269,14 @@ function conectar()
     return new PDO('pgsql:host=localhost;dbname=datos', 'usuario', 'usuario');
 }
 
-function es_GET()
+function es_GET($req = null)
 {
-    return metodo() === 'GET';
+    return ($req === null) ? metodo() === 'GET' : $req === REQ_GET;
 }
 
-function es_POST()
+function es_POST($req = null)
 {
-    return metodo() === 'POST';
+    return ($req === null) ? metodo() === 'POST' : $req === REQ_POST;
 }
 
 function metodo()
@@ -282,7 +284,7 @@ function metodo()
     return $_SERVER['REQUEST_METHOD'];
 }
 
-function peticion()
+function peticion($req = null)
 {
-    return metodo() === 'GET' ? $_GET : $_POST;
+    return es_GET($req) ? $_GET : $_POST;
 }
