@@ -1,5 +1,8 @@
 <?php
 
+const TIPO_ENTERO = 0;
+const TIPO_CADENA = 1;
+
 const REQ_GET = 'GET';
 const REQ_POST = 'POST';
 
@@ -53,7 +56,7 @@ function comprobarValoresIndex($args, &$errores)
     }
 }
 
-function comprobarValoresInsertar(&$args, $pdo, &$errores)
+function comprobarValores(&$args, $id, $pdo, &$errores)
 {
     if (!empty($errores) || empty($_POST)) {
         return;
@@ -69,10 +72,18 @@ function comprobarValoresInsertar(&$args, $pdo, &$errores)
         } elseif (mb_strlen($num_dep) > 2) {
             $errores['num_dep'] = 'El número no puede tener más de dos dígitos.';
         } else {
-            $sent = $pdo->prepare('SELECT COUNT(*)
-                                     FROM departamentos
-                                    WHERE num_dep = :num_dep');
-            $sent->execute(['num_dep' => $num_dep]);
+            if ($id === null) {
+                $sent = $pdo->prepare('SELECT COUNT(*)
+                                         FROM departamentos
+                                        WHERE num_dep = :num_dep');
+                $sent->execute(['num_dep' => $num_dep]);
+            } else {
+                $sent = $pdo->prepare('SELECT COUNT(*)
+                                         FROM departamentos
+                                        WHERE num_dep = :num_dep
+                                          AND id != :id');
+                $sent->execute(['num_dep' => $num_dep, 'id' => $id]);
+            }
             if ($sent->fetchColumn() > 0) {
                 $errores['num_dep'] = 'Ese número de departamento ya existe.';
             }
@@ -146,15 +157,19 @@ function dibujarFormularioIndex($args, $par, $errores)
     <?php
 }
 
-function dibujarFormularioInsertar($args, $par, $errores)
+function dibujarFormulario($args, $par, $accion, $errores)
 { ?>
     <div class="row mt-3">
         <div class="col">
             <form action="" method="post">
                 <?php dibujarElementoFormulario($args, $par, $errores) ?>
                 <button type="submit" class="btn btn-primary">
-                    Insertar
+                    <?= $accion ?>
                 </button>
+                <a href="index.php" class="btn btn-info" role="button">
+                    Volver
+                </a>
+
             </form>
         </div>
     </div>
@@ -226,6 +241,9 @@ function dibujarTabla($sent, $count, $par, $errores)
                                     <form action="" method="post">
                                         <input type="hidden" name="id" value="<?= $fila['id'] ?>">
                                         <button type="submit" class="btn btn-sm btn-danger">Borrar</button>
+                                        <a href="modificar.php?id=<?= $fila['id'] ?>" class="btn btn-sm btn-info" role="button">
+                                            Modificar
+                                        </a>
                                     </form>
                                 </td>
                             </tr>

@@ -13,9 +13,6 @@
         <?php
         require __DIR__ . '/auxiliar.php';
 
-        const TIPO_ENTERO = 0;
-        const TIPO_CADENA = 1;
-
         const PAR = [
             'num_dep' => [
                 'def' => '',
@@ -40,6 +37,17 @@
                 borrarFila($pdo, $id);
             } elseif (isset($_GET['id'])) {
                 // Modificar
+            }
+        } else {
+            if (isset($_GET['insertado'])) {
+                alert('Fila insertada correctamente.', 'success');
+                unset($_GET['insertado']);
+            } elseif (isset($_GET['modificado'])) {
+                alert('Fila modificada correctamente.', 'success');
+                unset($_GET['modificado']);
+            } elseif (isset($_GET['modificar-error'])) {
+                alert('Error al modificar fila.', 'danger');
+                unset($_GET['modificar-error']);
             }
         }
 
