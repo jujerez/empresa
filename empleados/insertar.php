@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>Insertar un nuevo departamento</title>
+    <title>Insertar un nuevo empleado</title>
 </head>
 <body>
     <div class="container">       
@@ -13,32 +13,14 @@
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
     
-        const PAR = [
-            'num_dep' => [
-                'def' => '',
-                'tipo' => TIPO_ENTERO,
-                'etiqueta' => 'Número',
-            ],
-            'dnombre' => [
-                'def' => '',
-                'tipo' => TIPO_CADENA,
-                'etiqueta' => 'Nombre',
-            ],
-            'localidad' => [
-                'def' => '',
-                'tipo' => TIPO_CADENA,
-                'etiqueta' => 'Localidad',
-            ],
-        ];
-
         $errores = [];
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         $pdo = conectar();
         comprobarValores($args, null, $pdo, $errores);
         if (es_POST() && empty($errores)) {
             $sent = $pdo->prepare('INSERT
-                                     INTO departamentos (num_dep, dnombre, localidad)
-                                   VALUES (:num_dep, :dnombre, :localidad)');
+                                     INTO empleados (num_emp, nombre, salario, departamento_id)
+                                   VALUES (:num_emp, :nombre, :salario, :departamento_id)');
             $sent->execute($args);
             header('Location: index.php?insertado=1');
         }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>Modificar un departamento</title>
+    <title>Modificar un empleado</title>
 </head>
 <body>
     <div class="container">       
@@ -13,24 +13,6 @@
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
        
-        const PAR = [
-            'num_dep' => [
-                'def' => '',
-                'tipo' => TIPO_ENTERO,
-                'etiqueta' => 'Número',
-            ],
-            'dnombre' => [
-                'def' => '',
-                'tipo' => TIPO_CADENA,
-                'etiqueta' => 'Nombre',
-            ],
-            'localidad' => [
-                'def' => '',
-                'tipo' => TIPO_CADENA,
-                'etiqueta' => 'Localidad',
-            ],
-        ];
-
         $errores = [];
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         if (!isset($_GET['id'])) {
@@ -41,10 +23,11 @@
         $pdo = conectar();
         comprobarValores($args, $id, $pdo, $errores);
         if (es_POST() && empty($errores)) {
-            $sent = $pdo->prepare('UPDATE departamentos
-                                      SET num_dep = :num_dep
-                                        , dnombre = :dnombre
-                                        , localidad = :localidad
+            $sent = $pdo->prepare('UPDATE empleados
+                                      SET num_emp = :num_emp
+                                        , nombre = :nombre
+                                        , salario = :salario
+                                        , departamento_id = :departamento_id
                                     WHERE id = :id');
             $args['id'] = $id;
             $sent->execute($args);
@@ -53,7 +36,7 @@
         }
         if (es_GET()) {
             $sent = $pdo->prepare('SELECT *
-                                     FROM departamentos
+                                     FROM empleados
                                     WHERE id = :id');
             $sent->execute(['id' => $id]);
             if (($args = $sent->fetch(PDO::FETCH_ASSOC)) === false) {
