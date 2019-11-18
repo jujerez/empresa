@@ -15,11 +15,17 @@ const PAR = [
         'def' => '',
         'tipo' => TIPO_ENTERO,
         'etiqueta' => 'Salario',
+        'nofiltrar' => true,
     ],
     'departamento_id' => [
         'def' => '',
         'tipo' => TIPO_ENTERO,
-        'etiqueta' => 'Departamento'
+        'etiqueta' => 'Departamento',
+        'relacion' => [
+            'tabla' => 'departamentos',
+            'ajena' => 'id',
+            'visualizar' => 'dnombre',
+        ],
     ],
 ];
 

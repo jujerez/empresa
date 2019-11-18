@@ -39,8 +39,10 @@
         $errores = [];
         $args = comprobarParametros(PAR, REQ_GET, $errores);
         comprobarValoresIndex($args, $errores);
-        dibujarFormularioIndex($args, PAR, $errores);
-        $sql = 'FROM empleados WHERE true';
+        dibujarFormularioIndex($args, PAR, $pdo, $errores);
+        $sql = ' FROM empleados e JOIN departamentos d
+                   ON e.departamento_id = d.id
+                WHERE true';
         $execute = [];
         foreach (PAR as $k => $v) {
             insertarFiltro($sql, $execute, $k, $args, PAR, $errores);    

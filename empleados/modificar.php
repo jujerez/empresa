@@ -44,7 +44,7 @@
                 return;
             }
         }
-        dibujarFormulario($args, PAR, 'Modificar', $errores);
+        dibujarFormulario($args, PAR, 'Modificar', $pdo, $errores);
         ?>
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->

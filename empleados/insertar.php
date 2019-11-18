@@ -24,7 +24,7 @@
             $sent->execute($args);
             header('Location: index.php?insertado=1');
         }
-        dibujarFormulario($args, PAR, 'Insertar', $errores);
+        dibujarFormulario($args, PAR, 'Insertar', $pdo, $errores);
         ?>
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->

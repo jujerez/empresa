@@ -57,12 +57,12 @@ function valido($campo, $errores)
     }
 }
 
-function dibujarFormularioIndex($args, $par, $errores)
+function dibujarFormularioIndex($args, $par, $pdo, $errores)
 { ?>
     <div class="row mt-3">
         <div class="col-4 offset-4">
             <form action="" method="get">
-                <?php dibujarElementoFormulario($args, $par, $errores) ?>
+                <?php dibujarElementoFormulario($args, $par, $pdo, $errores) ?>
                 <button type="submit" class="btn btn-primary">
                     Buscar
                 </button>
@@ -75,12 +75,12 @@ function dibujarFormularioIndex($args, $par, $errores)
     <?php
 }
 
-function dibujarFormulario($args, $par, $accion, $errores)
+function dibujarFormulario($args, $par, $accion, $pdo, $errores)
 { ?>
     <div class="row mt-3">
         <div class="col">
             <form action="" method="post">
-                <?php dibujarElementoFormulario($args, $par, $errores) ?>
+                <?php dibujarElementoFormulario($args, $par, $pdo, $errores) ?>
                 <button type="submit" class="btn btn-primary">
                     <?= $accion ?>
                 </button>
@@ -94,16 +94,34 @@ function dibujarFormulario($args, $par, $accion, $errores)
     <?php
 }
 
-function dibujarElementoFormulario($args, $par, $errores)
+function dibujarElementoFormulario($args, $par, $pdo, $errores)
 {
     foreach ($par as $k => $v): ?>
         <?php if (isset($par[$k]['def'])): ?>
             <div class="form-group">
                 <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
-                <input type="text"
-                       class="form-control <?= valido($k, $errores) ?>"
-                       id="<?= $k ?>" name="<?= $k ?>"
-                       value="<?= $args[$k] ?>">
+                <?php if (isset($par[$k]['relacion'])): ?>
+                    <?php
+                    $tabla = $par[$k]['relacion']['tabla'];
+                    $visualizar = $par[$k]['relacion']['visualizar'];
+                    $ajena = $par[$k]['relacion']['ajena'];
+                    $sent = $pdo->query("SELECT $ajena, $visualizar
+                                           FROM $tabla");
+                    ?>
+                    <select id="<?= $k ?>" name="<?= $k ?>" class="form-control">
+                        <?php foreach ($sent as $fila): ?>
+                            <option value="<?= $fila[0] ?>"
+                                    <?= selected($fila[0], $args['departamento_id']) ?>>
+                                <?= $fila[1] ?>
+                            </option>
+                        <?php endforeach ?>
+                    </select>
+                <?php else: ?>
+                    <input type="text"
+                           class="form-control <?= valido($k, $errores) ?>"
+                           id="<?= $k ?>" name="<?= $k ?>"
+                           value="<?= $args[$k] ?>">
+                <?php endif ?>
                 <?= mensajeError($k, $errores) ?>
             </div>
         <?php endif ?><?php
@@ -153,7 +171,12 @@ function dibujarTabla($sent, $count, $par, $errores)
                         <?php foreach ($sent as $fila): ?>
                             <tr scope="row">
                                 <?php foreach ($par as $k => $v): ?>
-                                    <td><?= $fila[$k] ?></td>
+                                    <?php if (isset($par[$k]['relacion'])): ?>
+                                        <?php $visualizar = $par[$k]['relacion']['visualizar'] ?>
+                                        <td><?= $fila[$visualizar] ?></td>
+                                    <?php else: ?>
+                                        <td><?= $fila[$k] ?></td>
+                                    <?php endif ?>
                                 <?php endforeach ?>
                                 <td>
                                     <form action="" method="post">
