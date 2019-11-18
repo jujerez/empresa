@@ -217,7 +217,7 @@ function borrarFila($pdo, $tabla, $id)
                             WHERE id = :id");
     $sent->execute(['id' => $id]);
     if ($sent->rowCount() === 1) {
-        alert('Fila borrada con éxito.', 'success');
+        aviso('insertado', 'Fila borrada con éxito.', 'success');
     } else {
         alert('Ha ocurrido un error inesperado.', 'danger');
     }

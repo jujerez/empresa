@@ -14,48 +14,27 @@
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
 
-        const PAR = [
-            'num_dep' => [
-                'def' => '',
-                'tipo' => TIPO_ENTERO,
-                'etiqueta' => 'Número',
-            ],
-            'dnombre' => [
-                'def' => '',
-                'tipo' => TIPO_CADENA,
-                'etiqueta' => 'Nombre',
-            ],
-            'localidad' => [
-                'etiqueta' => 'Localidad',
-            ],
-        ];
-        
         $pdo = conectar();
 
         if (es_POST()) {
             if (isset($_POST['id'])) {
                 $id = trim($_POST['id']);
-                borrarFila($pdo, 'departamentos', $id);
-            } elseif (isset($_GET['id'])) {
-                // Modificar
+                if (!departamentoVacio($pdo, $id)) {
+                    alert('El departamento tiene empleados.', 'danger');
+                } else {
+                    borrarFila($pdo, 'departamentos', $id);
+                }
             }
         } else {
-            if (isset($_GET['insertado'])) {
-                alert('Fila insertada correctamente.', 'success');
-                unset($_GET['insertado']);
-            } elseif (isset($_GET['modificado'])) {
-                alert('Fila modificada correctamente.', 'success');
-                unset($_GET['modificado']);
-            } elseif (isset($_GET['modificar-error'])) {
-                alert('Error al modificar fila.', 'danger');
-                unset($_GET['modificar-error']);
-            }
+            aviso('insertado', 'Fila insertada correctamente.', 'success');
+            aviso('modificado', 'Fila modificada correctamente.', 'success');
+            aviso('modificar-error', 'Error al modificar fila.', 'danger');
         }
 
         $errores = [];
         $args = comprobarParametros(PAR, REQ_GET, $errores);
         comprobarValoresIndex($args, $errores);
-        dibujarFormularioIndex($args, PAR, $errores);
+        dibujarFormularioIndex($args, PAR, $pdo, $errores);
         $sql = 'FROM departamentos WHERE true';
         $execute = [];
         foreach (PAR as $k => $v) {

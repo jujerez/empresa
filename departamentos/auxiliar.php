@@ -1,5 +1,23 @@
 <?php
 
+const PAR = [
+    'num_dep' => [
+        'def' => '',
+        'tipo' => TIPO_ENTERO,
+        'etiqueta' => 'Número',
+    ],
+    'dnombre' => [
+        'def' => '',
+        'tipo' => TIPO_CADENA,
+        'etiqueta' => 'Nombre',
+    ],
+    'localidad' => [
+        'def' => '',
+        'tipo' => TIPO_CADENA,
+        'etiqueta' => 'Localidad',
+    ],
+];
+
 function comprobarValoresIndex($args, &$errores)
 {
     if (!empty($errores)) {
@@ -79,5 +97,22 @@ function comprobarValores(&$args, $id, $pdo, &$errores)
         } else {
             $args['localidad'] = null;
         }
+    }
+}
+
+function departamentoVacio($pdo, $id)
+{
+    $sent = $pdo->prepare('SELECT COUNT(*)
+                             FROM empleados
+                            WHERE departamento_id = :id');
+    $sent->execute(['id' => $id]);
+    return $sent->fetchColumn() === 0;
+}
+
+function aviso($par, $mensaje, $tipo)
+{
+    if (isset($_GET[$par])) {
+        alert($mensaje, $tipo);
+        unset($_GET[$par]);
     }
 }

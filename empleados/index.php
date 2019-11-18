@@ -20,8 +20,6 @@
             if (isset($_POST['id'])) {
                 $id = trim($_POST['id']);
                 borrarFila($pdo, 'empleados', $id);
-            } elseif (isset($_GET['id'])) {
-                // Modificar
             }
         } else {
             if (isset($_GET['insertado'])) {

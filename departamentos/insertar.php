@@ -13,24 +13,6 @@
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
     
-        const PAR = [
-            'num_dep' => [
-                'def' => '',
-                'tipo' => TIPO_ENTERO,
-                'etiqueta' => 'Número',
-            ],
-            'dnombre' => [
-                'def' => '',
-                'tipo' => TIPO_CADENA,
-                'etiqueta' => 'Nombre',
-            ],
-            'localidad' => [
-                'def' => '',
-                'tipo' => TIPO_CADENA,
-                'etiqueta' => 'Localidad',
-            ],
-        ];
-
         $errores = [];
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         $pdo = conectar();
@@ -42,7 +24,7 @@
             $sent->execute($args);
             header('Location: index.php?insertado=1');
         }
-        dibujarFormulario($args, PAR, 'Insertar', $errores);
+        dibujarFormulario($args, PAR, 'Insertar', $pdo, $errores);
         ?>
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
