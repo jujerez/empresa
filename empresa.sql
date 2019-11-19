@@ -9,6 +9,16 @@ CREATE TABLE departamentos
                            CHECK (localidad != '')
 );
 
+DROP TABLE IF EXISTS usuarios CASCADE;
+
+CREATE TABLE usuarios
+(
+     id       bigserial    PRIMARY KEY
+   , login    varchar(255) NOT NULL UNIQUE
+   , password varchar(255) NOT NULL
+   , email    varchar(255) NOT NULL
+);
+
 DROP TABLE IF EXISTS empleados CASCADE;
 
 CREATE TABLE empleados
@@ -20,6 +30,9 @@ CREATE TABLE empleados
   , departamento_id bigint       NOT NULL REFERENCES departamentos (id)
                                  ON DELETE NO ACTION ON UPDATE CASCADE
 );
+
+INSERT INTO usuarios (login, password, email)
+VALUES ('pepe', crypt('pepe', gen_salt('bf', 12)), 'pepe@pepe.com');
 
 INSERT INTO departamentos (num_dep, dnombre, localidad)
 VALUES (10, 'Contabilidad', 'Sanlúcar')
