@@ -217,7 +217,8 @@ function borrarFila($pdo, $tabla, $id)
                             WHERE id = :id");
     $sent->execute(['id' => $id]);
     if ($sent->rowCount() === 1) {
-        aviso('insertado', 'Fila borrada con éxito.', 'success');
+        setcookie('borrado', '1', 0, '/');
+        header('Location: index.php');
     } else {
         alert('Ha ocurrido un error inesperado.', 'danger');
     }

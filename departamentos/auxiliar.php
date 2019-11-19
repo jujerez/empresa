@@ -111,8 +111,9 @@ function departamentoVacio($pdo, $id)
 
 function aviso($par, $mensaje, $tipo)
 {
-    if (isset($_GET[$par])) {
+    if (isset($_COOKIE[$par])) {
         alert($mensaje, $tipo);
-        unset($_GET[$par]);
+        setcookie($par, '1', 1, '/');
+        unset($_COOKIE[$par]);
     }
 }

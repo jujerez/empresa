@@ -30,6 +30,7 @@
                 }
             }
         } else {
+            aviso('borrado', 'Fila borrada con éxito.', 'success');
             aviso('insertado', 'Fila insertada correctamente.', 'success');
             aviso('modificado', 'Fila modificada correctamente.', 'success');
             aviso('modificar-error', 'Error al modificar fila.', 'danger');

@@ -16,7 +16,8 @@
         $errores = [];
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         if (!isset($_GET['id'])) {
-            header('Location: index.php?modificar-error=1');
+            setcookie('modificar-error', '1', 0, '/');
+            header('Location: index.php');
             return;
         }
         $id = trim($_GET['id']);
@@ -30,7 +31,8 @@
                                     WHERE id = :id');
             $args['id'] = $id;
             $sent->execute($args);
-            header('Location: index.php?modificado=1');
+            setcookie('modificado', '1', 0, '/');
+            header('Location: index.php');
             return;
         }
         if (es_GET()) {
@@ -39,7 +41,8 @@
                                     WHERE id = :id');
             $sent->execute(['id' => $id]);
             if (($args = $sent->fetch(PDO::FETCH_ASSOC)) === false) {
-                header('Location: index.php?modificar-error=1');
+                setcookie('modificar-error', '1', 0, '/');
+                header('Location: index.php');
                 return;
             }
         }
