@@ -14,6 +14,10 @@
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
 
+        if (!isset($_COOKIE['aceptar'])) {
+            alert('Este sitio usa cookies. <a href="/comunes/cookies.php">Estoy de acuerdo</a>', 'info');
+        }
+
         $pdo = conectar();
 
         if (es_POST()) {
