@@ -2,6 +2,7 @@
 
 const TIPO_ENTERO = 0;
 const TIPO_CADENA = 1;
+const TIPO_PASSWORD = 2;
 
 const REQ_GET = 'GET';
 const REQ_POST = 'POST';
@@ -116,6 +117,11 @@ function dibujarElementoFormulario($args, $par, $pdo, $errores)
                             </option>
                         <?php endforeach ?>
                     </select>
+                <?php elseif ($par[$k]['tipo'] === TIPO_PASSWORD): ?>
+                    <input type="password"
+                           class="form-control <?= valido($k, $errores) ?>"
+                           id="<?= $k ?>" name="<?= $k ?>"
+                           value="">
                 <?php else: ?>
                     <input type="text"
                            class="form-control <?= valido($k, $errores) ?>"
@@ -247,4 +253,36 @@ function metodo()
 function peticion($req = null)
 {
     return es_GET($req) ? $_GET : $_POST;
+}
+
+function barra()
+{ ?>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto justify-content-end">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/index.php">Inicio <span class="sr-only">(current)</span></a>
+                </li>
+                <?php if (logueado()): ?>
+                    <span class="navbar-text">
+                        <?= logueado() ?>
+                    </span>
+                    <form class="form-inline my-2 my-lg-0" action="/usuarios/logout.php" method="post">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+                    </form>
+                <?php else: ?>
+                    <a class="nav-link" href="/usuarios/login.php">Login</a>
+                <?php endif ?>
+            </ul>
+        </div>
+    </nav>
+    <?php
+}
+
+function logueado()
+{
+    return isset($_SESSION['login']) ? $_SESSION['login'] : false;
 }

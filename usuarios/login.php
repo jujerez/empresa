@@ -1,3 +1,4 @@
+<?php session_start() ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>Departamentos</title>
+    <title>Login</title>
 </head>
 <body>
     <div class="container">
@@ -14,50 +15,31 @@
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
 
+        const PAR = [
+            'login' => [
+                'def' => '',
+                'tipo' => TIPO_CADENA,
+                'etiqueta' => 'Usuario',
+            ],
+            'password' => [
+                'def' => '',
+                'tipo' => TIPO_PASSWORD,
+                'etiqueta' => 'Contraseña',
+            ],
+        ];
+
         barra();
-        
+
         if (!isset($_COOKIE['aceptar'])) {
             alert('Este sitio usa cookies. <a href="/comunes/cookies.php">Estoy de acuerdo</a>', 'info');
         }
 
-        $pdo = conectar();
-
-        if (es_POST()) {
-            if (isset($_POST['id'])) {
-                $id = trim($_POST['id']);
-                if (!departamentoVacio($pdo, $id)) {
-                    alert('El departamento tiene empleados.', 'danger');
-                } else {
-                    borrarFila($pdo, 'departamentos', $id);
-                }
-            }
-        } else {
-            aviso('borrado', 'Fila borrada con éxito.', 'success');
-            aviso('insertado', 'Fila insertada correctamente.', 'success');
-            aviso('modificado', 'Fila modificada correctamente.', 'success');
-            aviso('modificar-error', 'Error al modificar fila.', 'danger');
-        }
-
         $errores = [];
-        $args = comprobarParametros(PAR, REQ_GET, $errores);
-        comprobarValoresIndex($args, $errores);
-        dibujarFormularioIndex($args, PAR, $pdo, $errores);
-        $sql = 'FROM departamentos WHERE true';
-        $execute = [];
-        foreach (PAR as $k => $v) {
-            insertarFiltro($sql, $execute, $k, $args, PAR, $errores);    
-        }
-        [$sent, $count] = ejecutarConsulta($sql, $execute, $pdo);
-        dibujarTabla($sent, $count, PAR, $errores);
+        $args = comprobarParametros(PAR, REQ_POST, $errores);
+        $pdo = conectar();
+        comprobarValoresLogin($args, $pdo, $errores);
+        dibujarFormulario($args, PAR, 'Login', $pdo, $errores);
         ?>
-        <div class="row">
-            <div class="col text-center">
-                <a href="/departamentos/insertar.php" class="btn btn-info" role="button">
-                    Insertar
-                </a>
-            </div>
-        </div>
-    </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
