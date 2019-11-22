@@ -266,6 +266,12 @@ function barra()
                 <li class="nav-item active">
                     <a class="nav-link" href="/index.php">Inicio <span class="sr-only">(current)</span></a>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/empleados/">Empleados <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/departamentos/">Departamentos <span class="sr-only">(current)</span></a>
+                </li>
                 <?php if (logueado()): ?>
                     <span class="navbar-text mr-2">
                         <?= logueado() ?>
