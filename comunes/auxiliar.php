@@ -267,11 +267,11 @@ function barra()
                     <a class="nav-link" href="/index.php">Inicio <span class="sr-only">(current)</span></a>
                 </li>
                 <?php if (logueado()): ?>
-                    <span class="navbar-text">
+                    <span class="navbar-text mr-2">
                         <?= logueado() ?>
                     </span>
                     <form class="form-inline my-2 my-lg-0" action="/usuarios/logout.php" method="post">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+                        <button class="btn btn-success my-2 my-sm-0" type="submit">Logout</button>
                     </form>
                 <?php else: ?>
                     <a class="nav-link" href="/usuarios/login.php">Login</a>

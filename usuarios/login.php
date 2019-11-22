@@ -38,6 +38,12 @@
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         $pdo = conectar();
         comprobarValoresLogin($args, $pdo, $errores);
+        if (es_POST() && empty($errores)) {
+            // Usuario se loguea
+            $_SESSION['login'] = $args['login'];
+            header('Location: /index.php');
+            return;
+        }
         dibujarFormulario($args, PAR, 'Login', $pdo, $errores);
         ?>
     <!-- Optional JavaScript -->

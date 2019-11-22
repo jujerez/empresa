@@ -1,3 +1,4 @@
+<?php session_start() ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +14,8 @@
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
     
+        barra();
+
         $errores = [];
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         $pdo = conectar();

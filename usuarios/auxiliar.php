@@ -15,21 +15,25 @@ function comprobarValoresLogin(&$args, $pdo, &$errores)
             $errores['login'] = 'El nombre de usuario no puede tener más de 255 caracteres.';
         } else {
             // Comprobar si el usuario existe
-            // $sent = $pdo->prepare('SELECT COUNT(*)
-            //                          FROM departamentos
-            //                         WHERE num_dep = :num_dep');
-            // $sent->execute(['num_dep' => $num_dep]);
-            // if ($sent->fetchColumn() > 0) {
-            //     $errores['num_dep'] = 'Ese número de departamento ya existe.';
-            // }
+            $sent = $pdo->prepare('SELECT *
+                                     FROM usuarios
+                                    WHERE login = :login');
+            $sent->execute(['login' => $login]);
+            if (($fila = $sent->fetch()) === false) {
+                $errores['login'] = 'Ese usuario no existe.';
+            }
         }
     }
 
     if (isset($args['password'])) {
-        if ($dnombre === '') {
+        if ($password === '') {
             $errores['password'] = 'La contraseña es obligatoria.';
-        } else {
+        } elseif ($fila !== false) {
             // Comprobar contraseña
+            if (!password_verify($password, $fila['password'])) {
+                $args['password'] = '';
+                $errores['password'] = 'Contraseña incorrecta.';
+            }
         }
     }
 }
