@@ -23,7 +23,7 @@
                                      INTO departamentos (num_dep, dnombre, localidad)
                                    VALUES (:num_dep, :dnombre, :localidad)');
             $sent->execute($args);
-            setcookie('insertado', '1', 0, '/');
+            aviso('Fila insertada correctamente.');
             header('Location: index.php');
         }
         dibujarFormulario($args, PAR, 'Insertar', $pdo, $errores);

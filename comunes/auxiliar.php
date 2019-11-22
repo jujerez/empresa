@@ -202,11 +202,23 @@ function dibujarTabla($sent, $count, $par, $errores)
     <?php endif;
 }
 
-function alert($mensaje, $tipo)
-{ ?>
+function alert($mensaje = null, $severidad = null)
+{
+    if ($mensaje === null) {
+        if (hayAvisos()) {
+            $aviso = getAviso();
+            $mensaje = $aviso['mensaje'];
+            $severidad = $aviso['severidad'];
+            quitarAvisos();
+        } else {
+            return;
+        }
+    }
+    
+    ?>
     <div class="row mt-3">
         <div class="col-8 offset-2">
-            <div class="alert alert-<?= $tipo ?> alert-dismissible fade show" role="alert">
+            <div class="alert alert-<?= $severidad ?> alert-dismissible fade show" role="alert">
                 <?= $mensaje ?>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -223,7 +235,7 @@ function borrarFila($pdo, $tabla, $id)
                             WHERE id = :id");
     $sent->execute(['id' => $id]);
     if ($sent->rowCount() === 1) {
-        setcookie('borrado', '1', 0, '/');
+        aviso('Fila borrada correctamente.');
         header('Location: index.php');
     } else {
         alert('Ha ocurrido un error inesperado.', 'danger');
@@ -291,4 +303,27 @@ function barra()
 function logueado()
 {
     return isset($_SESSION['login']) ? $_SESSION['login'] : false;
+}
+
+function aviso($mensaje, $severidad = 'success')
+{
+    $_SESSION['aviso'] = [
+        'mensaje' => $mensaje,
+        'severidad' => $severidad,
+    ];
+}
+
+function hayAvisos()
+{
+    return isset($_SESSION['aviso']);
+}
+
+function getAviso()
+{
+    return hayAvisos() ? $_SESSION['aviso'] : [];
+}
+
+function quitarAvisos()
+{
+    unset($_SESSION['aviso']);
 }

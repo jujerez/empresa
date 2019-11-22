@@ -17,7 +17,7 @@
         $errores = [];
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         if (!isset($_GET['id'])) {
-            setcookie('modificar-error', '1', 0, '/');
+            aviso('Error al modificar fila.', 'danger');
             header('Location: index.php');
             return;
         }
@@ -32,7 +32,7 @@
                                     WHERE id = :id');
             $args['id'] = $id;
             $sent->execute($args);
-            setcookie('modificado', '1', 0, '/');
+            aviso('Fila modificada correctamente.');
             header('Location: index.php');
             return;
         }
@@ -42,7 +42,7 @@
                                     WHERE id = :id');
             $sent->execute(['id' => $id]);
             if (($args = $sent->fetch(PDO::FETCH_ASSOC)) === false) {
-                setcookie('modificar-error', '1', 0, '/');
+                aviso('Error al modificar fila.', 'danger');
                 header('Location: index.php');
                 return;
             }

@@ -15,6 +15,12 @@
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
 
+        if (!logueado()) {
+            aviso('Tiene que estar logueado para entrar en esa parte del programa.', 'danger');
+            header('Location: /index.php');
+            return;
+        }
+
         barra();
         
         if (!isset($_COOKIE['aceptar'])) {
@@ -32,11 +38,8 @@
                     borrarFila($pdo, 'departamentos', $id);
                 }
             }
-        } else {
-            aviso('borrado', 'Fila borrada con éxito.', 'success');
-            aviso('insertado', 'Fila insertada correctamente.', 'success');
-            aviso('modificado', 'Fila modificada correctamente.', 'success');
-            aviso('modificar-error', 'Error al modificar fila.', 'danger');
+        } elseif (hayAvisos()) {
+            alert();
         }
 
         $errores = [];

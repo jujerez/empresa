@@ -28,17 +28,8 @@
                 $id = trim($_POST['id']);
                 borrarFila($pdo, 'empleados', $id);
             }
-        } else {
-            if (isset($_GET['insertado'])) {
-                alert('Fila insertada correctamente.', 'success');
-                unset($_GET['insertado']);
-            } elseif (isset($_GET['modificado'])) {
-                alert('Fila modificada correctamente.', 'success');
-                unset($_GET['modificado']);
-            } elseif (isset($_GET['modificar-error'])) {
-                alert('Error al modificar fila.', 'danger');
-                unset($_GET['modificar-error']);
-            }
+        } elseif (hayAvisos()) {
+            alert();
         }
 
         $errores = [];

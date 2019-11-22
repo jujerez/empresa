@@ -25,7 +25,8 @@
                                      INTO empleados (num_emp, nombre, salario, departamento_id)
                                    VALUES (:num_emp, :nombre, :salario, :departamento_id)');
             $sent->execute($args);
-            header('Location: index.php?insertado=1');
+            aviso('La fila se ha insertado correctamente.');
+            header('Location: index.php');
         }
         dibujarFormulario($args, PAR, 'Insertar', $pdo, $errores);
         ?>
