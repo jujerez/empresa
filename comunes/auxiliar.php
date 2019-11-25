@@ -111,9 +111,9 @@ function dibujarElementoFormulario($args, $par, $pdo, $errores)
                     ?>
                     <select id="<?= $k ?>" name="<?= $k ?>" class="form-control">
                         <?php foreach ($sent as $fila): ?>
-                            <option value="<?= $fila[0] ?>"
+                            <option value="<?= h($fila[0]) ?>"
                                     <?= selected($fila[0], $args['departamento_id']) ?>>
-                                <?= $fila[1] ?>
+                                <?= h($fila[1]) ?>
                             </option>
                         <?php endforeach ?>
                     </select>
@@ -126,7 +126,7 @@ function dibujarElementoFormulario($args, $par, $pdo, $errores)
                     <input type="text"
                            class="form-control <?= valido($k, $errores) ?>"
                            id="<?= $k ?>" name="<?= $k ?>"
-                           value="<?= $args[$k] ?>">
+                           value="<?= h($args[$k]) ?>">
                 <?php endif ?>
                 <?= mensajeError($k, $errores) ?>
             </div>
@@ -181,7 +181,7 @@ function dibujarTabla($sent, $count, $par, $errores)
                                         <?php $visualizar = $par[$k]['relacion']['visualizar'] ?>
                                         <td><?= $fila[$visualizar] ?></td>
                                     <?php else: ?>
-                                        <td><?= $fila[$k] ?></td>
+                                        <td><?= h($fila[$k]) ?></td>
                                     <?php endif ?>
                                 <?php endforeach ?>
                                 <td>
@@ -326,4 +326,9 @@ function getAviso()
 function quitarAvisos()
 {
     unset($_SESSION['aviso']);
+}
+
+function h($cadena)
+{
+    return htmlspecialchars($cadena, ENT_QUOTES | ENT_SUBSTITUTE);
 }

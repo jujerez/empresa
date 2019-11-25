@@ -36,8 +36,10 @@
         $args = comprobarParametros(PAR, REQ_GET, $errores);
         comprobarValoresIndex($args, $errores);
         dibujarFormularioIndex($args, PAR, $pdo, $errores);
-        $sql = ' FROM empleados e JOIN departamentos d
-                   ON e.departamento_id = d.id
+        $sql = ' FROM empleados e
+                 JOIN (SELECT id AS d_id, num_dep, dnombre, localidad
+                         FROM departamentos) d
+                   ON e.departamento_id = d.d_id
                 WHERE true';
         $execute = [];
         foreach (PAR as $k => $v) {
