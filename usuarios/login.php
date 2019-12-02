@@ -14,7 +14,7 @@
         <?php
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
-
+        
         const PAR = [
             'login' => [
                 'def' => '',
@@ -30,8 +30,13 @@
 
         barra();
 
+
         if (!isset($_COOKIE['aceptar'])) {
             alert('Este sitio usa cookies. <a href="/comunes/cookies.php">Estoy de acuerdo</a>', 'info');
+        }
+
+        if (hayAvisos()) {
+            alert();
         }
 
         $errores = [];
@@ -41,6 +46,13 @@
         if (es_POST() && empty($errores)) {
             // Usuario se loguea
             $_SESSION['login'] = $args['login'];
+            $_SESSION['token'] = md5(uniqid(mt_rand(), true));
+            if (isset($_SESSION['retorno'])) {
+                $retorno = $_SESSION['retorno'];
+                unset($_SESSION['retorno']);
+                header("Location: $retorno");
+                return;
+            }
             header('Location: /index.php');
             return;
         }

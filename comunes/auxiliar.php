@@ -76,12 +76,23 @@ function dibujarFormularioIndex($args, $par, $pdo, $errores)
     <?php
 }
 
+function token_csrf()
+{
+    if (isset($_SESSION['token'])) {
+        $token = $_SESSION['token'];
+        return <<<EOT
+            <input type="hidden" name="_csrf" value="$token">
+        EOT;
+    }
+}
+
 function dibujarFormulario($args, $par, $accion, $pdo, $errores)
 { ?>
     <div class="row mt-3">
         <div class="col">
             <form action="" method="post">
                 <?php dibujarElementoFormulario($args, $par, $pdo, $errores) ?>
+                <?= token_csrf() ?>
                 <button type="submit" class="btn btn-primary">
                     <?= $accion ?>
                 </button>
@@ -187,6 +198,7 @@ function dibujarTabla($sent, $count, $par, $errores)
                                 <td>
                                     <form action="" method="post">
                                         <input type="hidden" name="id" value="<?= $fila['id'] ?>">
+                                        <?= token_csrf() ?>
                                         <button type="submit" class="btn btn-sm btn-danger">Borrar</button>
                                         <a href="modificar.php?id=<?= $fila['id'] ?>" class="btn btn-sm btn-info" role="button">
                                             Modificar
@@ -331,4 +343,16 @@ function quitarAvisos()
 function h($cadena)
 {
     return htmlspecialchars($cadena, ENT_QUOTES | ENT_SUBSTITUTE);
+}
+
+function logueoObligatorio()
+{
+    if (!logueado()) {
+        aviso('Tiene que estar logueado para entrar en esa parte del programa.', 'danger');
+        $_SESSION['retorno'] = $_SERVER['REQUEST_URI'];
+        $_SESSION['pepe'] = 'pepe';
+        header('Location: /usuarios/login.php');
+        return true;
+    }
+    return false;
 }

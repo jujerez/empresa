@@ -15,9 +15,7 @@
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
 
-        if (!logueado()) {
-            aviso('Tiene que estar logueado para entrar en esa parte del programa.', 'danger');
-            header('Location: /index.php');
+        if (logueoObligatorio()) {
             return;
         }
 
@@ -26,16 +24,31 @@
         if (!isset($_COOKIE['aceptar'])) {
             alert('Este sitio usa cookies. <a href="/comunes/cookies.php">Estoy de acuerdo</a>', 'info');
         }
-
+        
         $pdo = conectar();
-
+        
         if (es_POST()) {
             if (isset($_POST['id'])) {
                 $id = trim($_POST['id']);
                 if (!departamentoVacio($pdo, $id)) {
                     alert('El departamento tiene empleados.', 'danger');
                 } else {
-                    borrarFila($pdo, 'departamentos', $id);
+                    if (isset($_SESSION['token'])) {
+                        $token_sesion = $_SESSION['token'];
+                        var_dump($token_sesion);
+                        if (isset($_POST['_csrf'])) {
+                            $token_form = $_POST['_csrf'];
+                            var_dump($token_form);
+                            unset($_POST['_csrf']);
+                            if ($token_sesion !== $token_form) {
+                                alert('Ha ocurrido un error interno en el servidor.', 'danger');
+                            } else {
+                                borrarFila($pdo, 'departamentos', $id);
+                            }
+                        } else {
+                            alert('Ha ocurrido un error interno en el servidor.', 'danger');
+                        }
+                    }
                 }
             }
         } elseif (hayAvisos()) {
