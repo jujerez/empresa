@@ -296,6 +296,17 @@ function barra()
                 <li class="nav-item active">
                     <a class="nav-link" href="/departamentos/">Departamentos <span class="sr-only">(current)</span></a>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Usuarios
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/usuarios/registrar.php">Registrar</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
                 <?php if (logueado()): ?>
                     <span class="navbar-text mr-2">
                         <?= logueado() ?>

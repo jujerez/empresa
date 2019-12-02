@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>Login</title>
+    <title>Registrar</title>
 </head>
 <body>
     <div class="container">
@@ -26,6 +26,16 @@
                 'tipo' => TIPO_PASSWORD,
                 'etiqueta' => 'Contraseña',
             ],
+            'password_confirm' => [
+                'def' => '',
+                'tipo' => TIPO_PASSWORD,
+                'etiqueta' => 'Confirmar contraseña',
+            ],
+            'email' => [
+                'def' => '',
+                'tipo' => TIPO_CADENA,
+                'etiqueta' => 'Dirección de e-mail',
+            ],
         ];
 
         barra();
@@ -41,21 +51,23 @@
         $errores = [];
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         $pdo = conectar();
-        comprobarValoresLogin($args, $pdo, $errores);
+        comprobarValoresRegistrar($args, $pdo, $errores);
         if (es_POST() && empty($errores)) {
-            // Usuario se loguea
-            $_SESSION['login'] = $args['login'];
-            $_SESSION['token'] = md5(uniqid(mt_rand(), true));
-            if (isset($_SESSION['retorno'])) {
-                $retorno = $_SESSION['retorno'];
-                unset($_SESSION['retorno']);
-                header("Location: $retorno");
-                return;
+            $sent = $pdo->prepare('INSERT INTO usuarios (login, password, email)
+                                   VALUES (:login, :password, :email)');
+            if (!$sent->execute([
+                'login' => $args['login'],
+                'password' => password_hash($args['password'], PASSWORD_DEFAULT),
+                'email' => $args['email'] ?: null,
+            ])) {
+                aviso('Ha ocurrido algún problema.', 'danger');
+            } elseif ($sent->rowCount() !== 1) {
+                aviso('Ha ocurrido algún problema.', 'danger');
             }
             header('Location: /index.php');
             return;
         }
-        dibujarFormulario($args, PAR, 'Login', $pdo, $errores);
+        dibujarFormulario($args, PAR, 'Registrar', $pdo, $errores);
         ?>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
