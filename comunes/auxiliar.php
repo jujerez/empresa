@@ -7,6 +7,8 @@ const TIPO_PASSWORD = 2;
 const REQ_GET = 'GET';
 const REQ_POST = 'POST';
 
+const FPP = 3;
+
 function comprobarParametros($par, $req, &$errores)
 {
     $res = [];
@@ -160,12 +162,17 @@ function insertarFiltro(&$sql, &$execute, $campo, $args, $par, $errores)
 
 function ejecutarConsulta($sql, $execute, $pdo)
 {
+    $sent = $pdo->prepare("SELECT * $sql");
+    $sent->execute($execute);
+    return $sent;
+}
+
+function contarConsulta($sql, $execute, $pdo)
+{
     $sent = $pdo->prepare("SELECT COUNT(*) $sql");
     $sent->execute($execute);
     $count = $sent->fetchColumn();
-    $sent = $pdo->prepare("SELECT * $sql");
-    $sent->execute($execute);
-    return [$sent, $count];
+    return $count;
 }
 
 function dibujarTabla($sent, $count, $par, $errores)
@@ -298,25 +305,24 @@ function barra()
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Usuarios
+                        <?php if (logueado()): ?>
+                            <?= logueado() ?>
+                        <?php else: ?>
+                            Usuarios
+                        <?php endif; ?>
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/usuarios/registrar.php">Registrar</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
+                        <?php if (!logueado()): ?>
+                            <a class="dropdown-item" href="/usuarios/registrar.php">Registrar</a>
+                            <a class="dropdown-item" href="/usuarios/login.php">Login</a>
+                            <?php else: ?>
+                            <!-- <div class="dropdown-divider"></div> -->
+                            <form class="form-inline my-2 my-lg-0" action="/usuarios/logout.php" method="post">
+                            <button class="btn btn-sm btn-success ml-4" type="submit">Logout</button>
+                        </form>
+                        <?php endif; ?>
                     </div>
                 </li>
-                <?php if (logueado()): ?>
-                    <span class="navbar-text mr-2">
-                        <?= logueado() ?>
-                    </span>
-                    <form class="form-inline my-2 my-lg-0" action="/usuarios/logout.php" method="post">
-                        <button class="btn btn-success my-2 my-sm-0" type="submit">Logout</button>
-                    </form>
-                <?php else: ?>
-                    <a class="nav-link" href="/usuarios/login.php">Login</a>
-                <?php endif ?>
             </ul>
         </div>
     </nav>
@@ -361,9 +367,54 @@ function logueoObligatorio()
     if (!logueado()) {
         aviso('Tiene que estar logueado para entrar en esa parte del programa.', 'danger');
         $_SESSION['retorno'] = $_SERVER['REQUEST_URI'];
-        $_SESSION['pepe'] = 'pepe';
         header('Location: /usuarios/login.php');
         return true;
     }
     return false;
+}
+
+function noLogueoObligatorio()
+{
+    if (logueado()) {
+        aviso('Tiene que estar no logueado para entrar en esa parte del programa.', 'danger');
+        $_SESSION['retorno'] = $_SERVER['REQUEST_URI'];
+        header('Location: /');
+        return true;
+    }
+    return false;
+}
+
+function paginador($pag, $npags)
+{ ?>
+    <div class="row">
+        <div class="col-6 offset-3 mt-3">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <?= ($pag <= 1) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?pag=<?= $pag - 1 ?>">Anterior</a>
+                    </li>
+                    <?php for ($i = 1; $i <= $npags; $i++): ?>
+                        <li class="page-item <?= ($i == $pag) ? 'active' : '' ?>">
+                            <a class="page-link" href="?pag=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor ?>
+                    <li class="page-item <?= ($pag >= $npags) ? 'disabled' : '' ?>">
+                        <a class="page-link" href="?pag=<?= $pag + 1 ?>">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div><?php
+}
+
+function recogerNumPag()
+{
+    if (isset($_GET['pag']) && ctype_digit($_GET['pag'])) {
+        $pag = trim($_GET['pag']);
+        unset($_GET['pag']);
+    } else {
+        $pag = 1;
+    }
+    
+    return $pag;
 }

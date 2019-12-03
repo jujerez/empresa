@@ -38,6 +38,10 @@
             ],
         ];
 
+        if (noLogueoObligatorio()) {
+            return;
+        }
+
         barra();
 
         if (!isset($_COOKIE['aceptar'])) {

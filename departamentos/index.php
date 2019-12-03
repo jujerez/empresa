@@ -25,6 +25,7 @@
             alert('Este sitio usa cookies. <a href="/comunes/cookies.php">Estoy de acuerdo</a>', 'info');
         }
         
+        $pag = recogerNumPag();
         $pdo = conectar();
         
         if (es_POST()) {
@@ -64,8 +65,12 @@
         foreach (PAR as $k => $v) {
             insertarFiltro($sql, $execute, $k, $args, PAR, $errores);    
         }
-        [$sent, $count] = ejecutarConsulta($sql, $execute, $pdo);
-        dibujarTabla($sent, $count, PAR, $errores);
+        $nfilas = contarConsulta($sql, $execute, $pdo);
+        $sql .= ' ORDER BY num_dep LIMIT ' . FPP
+              . ' OFFSET ' . ($pag - 1) * FPP;
+        $sent = ejecutarConsulta($sql, $execute, $pdo);
+        dibujarTabla($sent, $nfilas, PAR, $errores);
+        $npags = ceil($nfilas / FPP);
         ?>
         <div class="row">
             <div class="col text-center">
@@ -74,6 +79,7 @@
                 </a>
             </div>
         </div>
+        <?php paginador($pag, $npags) ?>
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
