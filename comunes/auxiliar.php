@@ -88,6 +88,14 @@ function token_csrf()
     }
 }
 
+function tokenValido($_csrf)
+{
+    if ($_csrf !== null) {
+        return $_csrf === $_SESSION['token'];
+    }
+    return false;
+}
+
 function dibujarFormulario($args, $par, $accion, $pdo, $errores)
 { ?>
     <div class="row mt-3">

@@ -15,6 +15,8 @@
         require __DIR__ . '/auxiliar.php';
 
         $errores = [];
+        $_csrf = (isset($_POST['_csrf'])) ? $_POST['_csrf'] : null;
+        unset($_POST['_csrf']);
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         if (!isset($_GET['id'])) {
             aviso('Error al modificar fila.', 'danger');
@@ -25,16 +27,20 @@
         $pdo = conectar();
         comprobarValores($args, $id, $pdo, $errores);
         if (es_POST() && empty($errores)) {
-            $sent = $pdo->prepare('UPDATE departamentos
-                                      SET num_dep = :num_dep
-                                        , dnombre = :dnombre
-                                        , localidad = :localidad
-                                    WHERE id = :id');
-            $args['id'] = $id;
-            $sent->execute($args);
-            aviso('Fila modificada correctamente.');
-            header('Location: index.php');
-            return;
+            if (!tokenValido($_csrf)) {
+                alert('El token de CSRF no es válido.', 'danger');
+            } else {
+                $sent = $pdo->prepare('UPDATE departamentos
+                                          SET num_dep = :num_dep
+                                            , dnombre = :dnombre
+                                            , localidad = :localidad
+                                        WHERE id = :id');
+                $args['id'] = $id;
+                $sent->execute($args);
+                aviso('Fila modificada correctamente.');
+                header('Location: index.php');
+                return;
+            }
         }
         if (es_GET()) {
             $sent = $pdo->prepare('SELECT *
