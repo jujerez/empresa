@@ -131,6 +131,7 @@ function dibujarElementoFormulario($args, $par, $pdo, $errores)
                                            FROM $tabla");
                     ?>
                     <select id="<?= $k ?>" name="<?= $k ?>" class="form-control">
+                        <option value=""></option>
                         <?php foreach ($sent as $fila): ?>
                             <option value="<?= h($fila[0]) ?>"
                                     <?= selected($fila[0], $args['departamento_id']) ?>>
@@ -205,19 +206,16 @@ function dibujarTabla($sent, $count, $par, $errores)
                                 <?php foreach ($par as $k => $v): ?>
                                     <?php if (isset($par[$k]['relacion'])): ?>
                                         <?php $visualizar = $par[$k]['relacion']['visualizar'] ?>
-                                        <td><?= $fila[$visualizar] ?></td>
+                                        <td><a href="/departamentos/modificar.php?<?=$fila['departamento_id']?>"><?= $fila[$visualizar] ?></a></td>
                                     <?php else: ?>
                                         <td><?= h($fila[$k]) ?></td>
                                     <?php endif ?>
                                 <?php endforeach ?>
                                 <td>
-                                    <form action="" method="post">
-                                        <input type="hidden" name="id" value="<?= $fila['id'] ?>">
-                                        <?= token_csrf() ?>
-                                        <button type="submit" class="btn btn-sm btn-danger">Borrar</button>
-                                        <a href="modificar.php?id=<?= $fila['id'] ?>" class="btn btn-sm btn-info" role="button">
-                                            Modificar
-                                        </a>
+                                    <a href="borrar.php?id=<?= $fila['id']?>" class="btn btn-sm btn-danger" role="button">Borrar</a>
+                                    <a href="modificar.php?id=<?= $fila['id'] ?>" class="btn btn-sm btn-info" role="button">
+                                        Modificar
+                                    </a>
                                     </form>
                                 </td>
                             </tr>
