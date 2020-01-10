@@ -32,6 +32,16 @@ CREATE TABLE empleados
                                  ON DELETE NO ACTION ON UPDATE CASCADE
 );
 
+DROP VIEW IF EXISTS v_departamentos CASCADE;
+
+CREATE VIEW v_departamentos AS
+SELECT d.*, COUNT(e.id) AS cantidad
+  FROM departamentos d
+  LEFT JOIN empleados e
+  ON e.departamento_id = d.id
+GROUP BY d.id;
+
+
 INSERT INTO usuarios (login, password, email)
 VALUES ('pepe', crypt('pepe', gen_salt('bf', 12)), 'pepe@pepe.com');
 

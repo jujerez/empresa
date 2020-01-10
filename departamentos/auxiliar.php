@@ -16,6 +16,13 @@ const PAR = [
         'tipo' => TIPO_CADENA,
         'etiqueta' => 'Localidad',
     ],
+
+    'cantidad' => [
+        'def' => '',
+        'tipo' => TIPO_ENTERO,
+        'etiqueta' => 'Numero empleados',
+    ],
+
 ];
 
 function comprobarValoresIndex($args, &$errores)

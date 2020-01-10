@@ -60,7 +60,7 @@
         $args = comprobarParametros(PAR, REQ_GET, $errores);
         comprobarValoresIndex($args, $errores);
         dibujarFormularioIndex($args, PAR, $pdo, $errores);
-        $sql = 'FROM departamentos WHERE true';
+        $sql = 'FROM v_departamentos WHERE true';
         $execute = [];
         foreach (PAR as $k => $v) {
             insertarFiltro($sql, $execute, $k, $args, PAR, $errores);    
