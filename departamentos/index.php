@@ -27,6 +27,8 @@
         
         $pag = recogerNumPag();
         $pdo = conectar();
+        $orden = recogerOrden();
+        $asc = recogerAsc();
         
         if (es_POST()) {
             if (isset($_POST['id'])) {
@@ -66,10 +68,11 @@
             insertarFiltro($sql, $execute, $k, $args, PAR, $errores);    
         }
         $nfilas = contarConsulta($sql, $execute, $pdo);
-        $sql .= ' ORDER BY num_dep LIMIT ' . FPP
-              . ' OFFSET ' . ($pag - 1) * FPP;
+        $sql .= " ORDER BY $orden " . ascendencia($asc);
+        $sql .=  "LIMIT " . FPP;
+        $sql .=   ' OFFSET ' . ($pag - 1) * FPP;
         $sent = ejecutarConsulta($sql, $execute, $pdo);
-        dibujarTabla($sent, $nfilas, PAR, $errores);
+        dibujarTabla($sent, $nfilas, PAR, $orden, $asc, $errores );
         $npags = ceil($nfilas / FPP);
         ?>
         <div class="row">
