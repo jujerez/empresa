@@ -13,7 +13,8 @@
         <?php
         require __DIR__ . '/../comunes/auxiliar.php';
         require __DIR__ . '/auxiliar.php';
-       
+        $_csrf = (isset($_POST['_csrf'])) ? $_POST['_csrf'] : null;
+        unset($_POST['_csrf']);
         barra();
         
         $errores = [];
