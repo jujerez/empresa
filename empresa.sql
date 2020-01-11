@@ -35,7 +35,7 @@ CREATE TABLE empleados
 DROP VIEW IF EXISTS v_departamentos CASCADE;
 
 CREATE VIEW v_departamentos AS
-SELECT d.*, COUNT(e.id) AS cantidad
+SELECT d.*, COUNT(e.id) AS cantidad, coalesce(round(avg(e.salario),0),2) AS salario_medio
   FROM departamentos d
   LEFT JOIN empleados e
   ON e.departamento_id = d.id

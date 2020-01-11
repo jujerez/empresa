@@ -20,7 +20,15 @@ const PAR = [
     'cantidad' => [
         'def' => '',
         'tipo' => TIPO_ENTERO,
+        'vista' => true,
         'etiqueta' => 'Numero empleados',
+    ],
+
+    'salario_medio' => [
+        'def' => '',
+        'tipo' => TIPO_ENTERO,
+        'vista' => true,
+        'etiqueta' => 'Salario medio',
     ],
 
 ];

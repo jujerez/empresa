@@ -17,7 +17,8 @@
         $errores = [];
         $_csrf = (isset($_POST['_csrf'])) ? $_POST['_csrf'] : null;
         unset($_POST['_csrf']);
-        $args = comprobarParametros(PAR, REQ_POST, $errores);
+        $args = comprobarParametrosModificar(PAR, REQ_POST, $errores);
+        
         if (!isset($_GET['id'])) {
             aviso('Error al modificar fila.', 'danger');
             header('Location: index.php');
@@ -41,6 +42,9 @@
                 header('Location: index.php');
                 return;
             }
+        } else {
+            var_dump($args);
+            var_dump($errores);
         }
         if (es_GET()) {
             $sent = $pdo->prepare('SELECT *

@@ -30,6 +30,30 @@ function comprobarParametros($par, $req, &$errores)
     return $res;
 }
 
+function comprobarParametrosModificar($par, $req, &$errores)
+{
+    $res = [];
+    foreach ($par as $k => $v) {
+        if (!isset($v['vista'])) {
+            
+            if (isset($v['def'])) {
+                $res[$k] = $v['def'];
+            }
+        }
+    }
+    $peticion = peticion($req);
+    if ((es_GET($req) && !empty($peticion)) || es_POST($req)) {
+        if ((es_GET($req) || es_POST($req) && !empty($peticion))
+            && empty(array_diff_key($res, $peticion))
+            && empty(array_diff_key($peticion, $res))) {
+            $res = array_map('trim', $peticion);
+        } else {
+            $errores[] = 'Los parámetros recibidos no son los correctos.';
+        }
+    }
+    return $res;
+}
+
 function mensajeError($campo, $errores)
 {
     if (isset($errores[$campo])) {
@@ -101,7 +125,12 @@ function dibujarFormulario($args, $par, $accion, $pdo, $errores)
     <div class="row mt-3">
         <div class="col">
             <form action="" method="post">
-                <?php dibujarElementoFormulario($args, $par, $pdo, $errores) ?>
+                <?php if ($accion == 'Modificar'):?>
+                    <?php dibujarElementoFormularioModificar($args, $par, $pdo, $errores) ?>
+                    <?php else :?>
+                        <?php dibujarElementoFormulario($args, $par, $pdo, $errores) ?>
+                <?php endif ?>
+                
                 <?= token_csrf() ?>
                 <button type="submit" class="btn btn-primary">
                     <?= $accion ?>
@@ -116,13 +145,19 @@ function dibujarFormulario($args, $par, $accion, $pdo, $errores)
     <?php
 }
 
+
+
 function dibujarElementoFormulario($args, $par, $pdo, $errores)
 {
     foreach ($par as $k => $v): ?>
+    
         <?php if (isset($par[$k]['def'])): ?>
             <div class="form-group">
-                <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
-                <?php if (isset($par[$k]['relacion'])): ?>
+                
+                  <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
+                
+                
+                <?php if (isset($par[$k]['relacion']) ): ?>
                     <?php
                     $tabla = $par[$k]['relacion']['tabla'];
                     $visualizar = $par[$k]['relacion']['visualizar'];
@@ -144,6 +179,56 @@ function dibujarElementoFormulario($args, $par, $pdo, $errores)
                            class="form-control <?= valido($k, $errores) ?>"
                            id="<?= $k ?>" name="<?= $k ?>"
                            value="">
+                
+                <?php else: ?>
+                    <input type="text"
+                           class="form-control <?= valido($k, $errores) ?>"
+                           id="<?= $k ?>" name="<?= $k ?>"
+                           value="<?= h($args[$k]) ?>">
+                <?php endif ?>
+                <?= mensajeError($k, $errores) ?>
+            </div>
+        <?php endif ?><?php
+    endforeach;
+}
+
+function dibujarElementoFormularioModificar($args, $par, $pdo, $errores)
+{
+    foreach ($par as $k => $v): ?>
+    
+        <?php if (isset($par[$k]['def'])): ?>
+            <div class="form-group">
+                <?php if (!isset($par[$k]['vista'])): ?>
+                  <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
+                <?php else: ?>
+                    <label></label>
+                <?php endif?>
+                
+                <?php if (isset($par[$k]['relacion']) ): ?>
+                    <?php
+                    $tabla = $par[$k]['relacion']['tabla'];
+                    $visualizar = $par[$k]['relacion']['visualizar'];
+                    $ajena = $par[$k]['relacion']['ajena'];
+                    $sent = $pdo->query("SELECT $ajena, $visualizar
+                                           FROM $tabla");
+                    ?>
+                    <select id="<?= $k ?>" name="<?= $k ?>" class="form-control">
+                        <option value=""></option>
+                        <?php foreach ($sent as $fila): ?>
+                            <option value="<?= h($fila[0]) ?>"
+                                    <?= selected($fila[0], $args['departamento_id']) ?>>
+                                <?= h($fila[1]) ?>
+                            </option>
+                        <?php endforeach ?>
+                    </select>
+                <?php elseif ($par[$k]['tipo'] === TIPO_PASSWORD): ?>
+                    <input type="password"
+                           class="form-control <?= valido($k, $errores) ?>"
+                           id="<?= $k ?>" name="<?= $k ?>"
+                           value="">
+                <?php elseif (isset($par[$k]['vista'])): ?>
+                    <!--<input type="hidden">-->
+
                 <?php else: ?>
                     <input type="text"
                            class="form-control <?= valido($k, $errores) ?>"
