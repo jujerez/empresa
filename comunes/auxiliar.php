@@ -543,7 +543,7 @@ function paramsFiltro()
     }
     return implode('&', $filtro);
 }
-function ascendencia($asc)
+function sentido($asc)
 {
     return $asc ? "ASC " : "DESC ";
 }

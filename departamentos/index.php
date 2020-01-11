@@ -68,7 +68,7 @@
             insertarFiltro($sql, $execute, $k, $args, PAR, $errores);    
         }
         $nfilas = contarConsulta($sql, $execute, $pdo);
-        $sql .= " ORDER BY $orden " . ascendencia($asc);
+        $sql .= " ORDER BY $orden " . sentido($asc);
         $sql .=  "LIMIT " . FPP;
         $sql .=   ' OFFSET ' . ($pag - 1) * FPP;
         $sent = ejecutarConsulta($sql, $execute, $pdo);

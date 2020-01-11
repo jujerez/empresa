@@ -52,10 +52,10 @@
         }
         $nfilas = contarConsulta($sql, $execute, $pdo);
 
-        $sql .= " ORDER BY $orden " . ascendencia($asc);
+        $sql .= " ORDER BY $orden " . sentido($asc);
         $sql .=  "LIMIT " . FPP;
         $sql .=   ' OFFSET ' . ($pag - 1) * FPP;
-        
+
         $sent = ejecutarConsulta($sql, $execute, $pdo);
         dibujarTabla($sent, $nfilas, PAR, $orden, $asc, $errores );
         $npags = ceil($nfilas / FPP);
