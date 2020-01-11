@@ -412,19 +412,22 @@ function barra()
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <?php if (logueado()): ?>
                             <?= logueado() ?>
-                        <?php else: ?>
-                            Usuarios
-                        <?php endif; ?>
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <?php if (!logueado()): ?>
-                            <a class="dropdown-item" href="/usuarios/registrar.php">Registrar</a>
-                            <a class="dropdown-item" href="/usuarios/login.php">Login</a>
                             <?php else: ?>
-                            <!-- <div class="dropdown-divider"></div> -->
-                            <form class="form-inline my-2 my-lg-0" action="/usuarios/logout.php" method="post">
-                            <button class="btn btn-sm btn-success ml-4" type="submit">Logout</button>
-                        </form>
+                                Usuarios
+                                <?php endif; ?>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <?php if (!logueado()): ?>
+                                    <a class="dropdown-item" href="/usuarios/registrar.php">Registrar</a>
+                                    <a class="dropdown-item" href="/usuarios/login.php">Login</a>
+                                    <?php else: ?>
+                                        <!-- <div class="dropdown-divider"></div> -->
+                                        <form class="form-inline my-2 my-lg-0" action="/usuarios/logout.php" method="post">
+                                            <button class="btn btn-sm btn-success ml-1" type="submit">Logout</button>
+                                        </form>
+                                        <form action="/usuarios/cambiar-contrasena.php" method="post">
+                                            <button class="btn btn-sm btn-warning ml-1 mt-1">Cambiar contraseña</button>
+                                        </form>
                         <?php endif; ?>
                     </div>
                 </li>

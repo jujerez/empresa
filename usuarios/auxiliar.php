@@ -83,3 +83,11 @@ function comprobarValoresRegistrar(&$args, $pdo, &$errores)
         }
     }
 }
+
+function getId($pdo, $usuario) 
+{
+    $sent = $pdo->prepare("SELECT * from usuarios WHERE login = :login");
+    $sent->execute(['login' => $usuario]);
+    $resultado = $sent->fetch(PDO::FETCH_ASSOC);
+    return $resultado['id'];
+}
