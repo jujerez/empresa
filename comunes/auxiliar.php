@@ -125,7 +125,7 @@ function dibujarFormulario($args, $par, $accion, $pdo, $errores)
     <div class="row mt-3">
         <div class="col">
             <form action="" method="post">
-                <?php if ($accion == 'Modificar'):?>
+                <?php if ($accion == 'Modificar' || $accion == 'Insertar'):?>
                     <?php dibujarElementoFormularioModificar($args, $par, $pdo, $errores) ?>
                     <?php else :?>
                         <?php dibujarElementoFormulario($args, $par, $pdo, $errores) ?>
