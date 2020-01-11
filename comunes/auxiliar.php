@@ -269,47 +269,61 @@ function contarConsulta($sql, $execute, $pdo)
     return $count;
 }
 
-function dibujarTabla($sent, $count, $par, $errores)
-{ ?>
-    <?php if ($count == 0): ?>
-        <?php alert('No se ha encontrado ninguna fila que coincida.', 'danger') ?>        <div class="row mt-3">
-    <?php elseif (isset($errores[0])): ?>
-        <?php alert($errores[0], 'danger') ?>
-    <?php else: ?>
-        <div class="row mt-4">
-            <div class="col-8 offset-2">
-                <table class="table">
-                    <thead>
-                        <?php foreach ($par as $k => $v): ?>
-                            <th scope="col"><?= $par[$k]['etiqueta'] ?></th>    
-                        <?php endforeach ?>
-                        <th scope="col">Acciones</th>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($sent as $fila): ?>
-                            <tr scope="row">
-                                <?php foreach ($par as $k => $v): ?>
-                                    <?php if (isset($par[$k]['relacion'])): ?>
-                                        <?php $visualizar = $par[$k]['relacion']['visualizar'] ?>
-                                        <td><a href="/departamentos/modificar.php?<?=$fila['departamento_id']?>"><?= $fila[$visualizar] ?></a></td>
-                                    <?php else: ?>
-                                        <td><?= h($fila[$k]) ?></td>
-                                    <?php endif ?>
-                                <?php endforeach ?>
-                                <td>
-                                    <a href="borrar.php?id=<?= $fila['id']?>" class="btn btn-sm btn-danger" role="button">Borrar</a>
-                                    <a href="modificar.php?id=<?= $fila['id'] ?>" class="btn btn-sm btn-info" role="button">
-                                        Modificar
+function dibujarTabla($sent, $count, $par, $orden, $asc, $errores)
+{
+    $filtro = paramsFiltro();
+    $asc = !$asc;
+    ?>
+    <?php if ($count == 0) : ?>
+        <?php alert('No se ha encontrado ninguna fila que coincida.', 'danger') ?> <div class="row mt-3">
+        <?php elseif (isset($errores[0])) : ?>
+            <?php alert($errores[0], 'danger') ?>
+        <?php else : ?>
+            <div class="row mt-4">
+                <div class="col-8 offset-2">
+                    <table class="table">
+                        <thead>
+                            <?php foreach ($par as $k => $v) : ?>
+                                <th scope="col">
+                                    <a href="<?= "?$filtro&orden=$k&asc=$asc" ?>">
+                                        <?= $par[$k]['etiqueta'] ?>
                                     </a>
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php endforeach ?>
-                    </tbody>
-                </table>
+                                    <?= ($k === $orden) ? $asc ? '⬆' : "⬇" : '' ?>
+                                </th>
+                            <?php endforeach ?>
+                            <th scope="col">Acciones</th>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($sent as $fila) : ?>
+                                <tr scope="row">
+                                    <?php foreach ($par as $k => $v) : ?>
+                                        <?php if (isset($par[$k]['relacion'])) : ?>
+                                            <?php $visualizar = $par[$k]['relacion']['visualizar'] ?>
+                                            <?php $d_id = $fila['departamento_id'] ?>
+                                            <td>
+                                                <a href="/departamentos/modificar.php?id=<?= $d_id ?>">
+                                                    <?= $fila[$visualizar] ?>
+                                                </a>
+                                            </td>
+                                        <?php else : ?>
+                                            <td><?= h($fila[$k]) ?></td>
+                                        <?php endif ?>
+                                    <?php endforeach ?>
+                                    <td>
+                                        <a href="borrar.php?id=<?= $fila['id'] ?>" class="btn btn-sm btn-danger" role="button">
+                                            Borrar
+                                        </a>
+                                        <a href="modificar.php?id=<?= $fila['id'] ?>" class="btn btn-sm btn-info" role="button">
+                                            Modificar
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-    <?php endif;
+        <?php endif;
 }
 
 function alert($mensaje = null, $severidad = null)
@@ -508,4 +522,38 @@ function recogerNumPag()
     }
     
     return $pag;
+}
+
+
+function recogerOrden()
+{
+    if (isset($_GET['orden'])) {
+        $orden = trim($_GET['orden']);
+        unset($_GET['orden']);
+    } else {
+        $orden = 'num_dep';
+    }
+    return $orden;
+}
+function paramsFiltro()
+{
+    $filtro = [];
+    foreach ($_GET as $k => $v) {
+        $filtro[] = "$k=$v";
+    }
+    return implode('&', $filtro);
+}
+function ascendencia($asc)
+{
+    return $asc ? "ASC " : "DESC ";
+}
+function recogerAsc()
+{
+    if (isset($_GET["asc"])) {
+        $aux = $_GET["asc"];
+        unset($_GET["asc"]);
+        return $aux;
+    } else {
+        return false;
+    }
 }
