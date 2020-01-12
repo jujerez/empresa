@@ -9,7 +9,8 @@ const PAR = [
     'dnombre' => [
         'def' => '',
         'tipo' => TIPO_CADENA,
-        'etiqueta' => 'Nombre',
+        'etiqueta' => 'Nombre Dep',
+        
     ],
     'localidad' => [
         'def' => '',

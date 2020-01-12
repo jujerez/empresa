@@ -156,6 +156,8 @@ function dibujarElementoFormulario($args, $par, $pdo, $errores)
                 
                   <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
                 
+                  
+                
                 
                 <?php if (isset($par[$k]['relacion']) ): ?>
                     <?php
@@ -179,7 +181,25 @@ function dibujarElementoFormulario($args, $par, $pdo, $errores)
                            class="form-control <?= valido($k, $errores) ?>"
                            id="<?= $k ?>" name="<?= $k ?>"
                            value="">
-                
+
+                <?php elseif ($par[$k]['etiqueta']==='Nombre Dep'): ?>
+
+                    <?php
+                        $sent2 = $pdo->prepare("SELECT * FROM departamentos");
+                        $sent2->execute();
+                           
+                    ?>
+                    
+                    <select class="form-control" name="dnombre">     
+                        <?php foreach ($sent2 as $fila => $v): ?>
+                                
+                            <option value="<?=h($v['dnombre'])?>" 
+                            <?=selected($v['dnombre'],$args['dnombre'])?>><?=h($v['dnombre'])?>
+                            </option>
+                            
+                        <?php endforeach ?>
+                    </select>
+                   
                 <?php else: ?>
                     <input type="text"
                            class="form-control <?= valido($k, $errores) ?>"
