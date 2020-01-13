@@ -128,3 +128,10 @@ function comprobarValores(&$args, $id, $pdo, &$errores)
         }
     }
 }
+
+function getNombreDept($id, $pdo) {
+    $sent = $pdo->prepare("SELECT * from departamentos WHERE id = :id");
+    $sent->execute(['id' => $id]);
+    $resultado = $sent->fetch(PDO::FETCH_ASSOC);
+    return $resultado['dnombre'];
+}
