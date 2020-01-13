@@ -154,10 +154,13 @@ function dibujarElementoFormulario($args, $par, $pdo, $errores)
         <?php if (isset($par[$k]['def'])): ?>
             <div class="form-group">
                 
-                  <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
-                
-                  
-                
+                <?php if (!esAdmin() && $par[$k]['etiqueta']==='Rol de Usuario'):?>
+                    <label></label>
+                <?php else : ?>
+
+                <label for="<?= $k ?>"><?= $par[$k]['etiqueta'] ?></label>
+                <?php endif ?>
+               
                 
                 <?php if (isset($par[$k]['relacion']) ): ?>
                     <?php
@@ -181,6 +184,10 @@ function dibujarElementoFormulario($args, $par, $pdo, $errores)
                            class="form-control <?= valido($k, $errores) ?>"
                            id="<?= $k ?>" name="<?= $k ?>"
                            value="">
+                
+                <?php elseif (!esAdmin() && $par[$k]['etiqueta']==='Rol de Usuario'):?>
+                    <input type="hidden">
+                
 
                 <?php elseif ($par[$k]['etiqueta']==='Nombre Dep'): ?>
 
@@ -432,23 +439,32 @@ function barra()
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <?php if (logueado()): ?>
                             <?= logueado() ?>
-                            <?php else: ?>
+                        <?php else: ?>
                                 Usuarios
-                                <?php endif; ?>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <?php if (!logueado()): ?>
-                                    <a class="dropdown-item" href="/usuarios/registrar.php">Registrar</a>
-                                    <a class="dropdown-item" href="/usuarios/login.php">Login</a>
-                                    <?php else: ?>
-                                        <!-- <div class="dropdown-divider"></div> -->
-                                        <form class="form-inline my-2 my-lg-0" action="/usuarios/logout.php" method="post">
-                                            <button class="btn btn-sm btn-success ml-1" type="submit">Logout</button>
-                                        </form>
-                                        <form action="/usuarios/cambiar-contrasena.php" method="post">
-                                            <button class="btn btn-sm btn-warning ml-1 mt-1">Cambiar contraseña</button>
-                                        </form>
                         <?php endif; ?>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <?php if (!logueado()): ?>
+                            <a class="dropdown-item" href="/usuarios/registrar.php">Registrar</a>
+                            <a class="dropdown-item" href="/usuarios/login.php">Login</a>
+                        <?php elseif(logueado() && !esAdmin()): ?>
+                            
+                            <form class="form-inline my-2 my-lg-0" action="/usuarios/logout.php" method="post">
+                                <button class="btn btn-sm btn-success ml-1" type="submit">Logout</button>
+                            </form>
+                            <form action="/usuarios/cambiar-contrasena.php" method="post">
+                                <button class="btn btn-sm btn-warning ml-1 mt-1">Cambiar contraseña</button>
+                            </form>
+
+                        <?php else: ?>
+                            <form class="form-inline my-2 my-lg-0" action="/usuarios/logout.php" method="post">
+                                <button class="btn btn-sm btn-success ml-1" type="submit">Logout</button>
+                            </form>
+                            <form action="/usuarios/cambiar-contrasena.php" method="post">
+                                <button class="btn btn-sm btn-warning ml-1 mt-1">Cambiar contraseña</button>
+                            </form>
+                            <a class="btn btn-sm btn-success ml-1 mt-1" href="/usuarios/registrar.php">Registrar</a>
+                        <?php endif ?>
                     </div>
                 </li>
             </ul>
@@ -579,4 +595,16 @@ function recogerAsc()
     } else {
         return false;
     }
+}
+
+function esAdmin() {
+    if (!logueado()) {
+        return false;
+    }
+    $pdo = conectar();
+    $sent = $pdo->prepare("SELECT * FROM usuarios WHERE login = :login");
+    $sent->execute(['login' => $_SESSION['login']]);
+    $res = $sent->fetch(PDO::FETCH_ASSOC);
+    return $res['rol']=='administrador';
+
 }

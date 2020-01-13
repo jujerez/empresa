@@ -16,13 +16,11 @@
         require __DIR__ . '/auxiliar.php';
 
         barra();
-
+        
         if (!isset($_COOKIE['aceptar'])) {
             alert('Este sitio usa cookies. <a href="/comunes/cookies.php">Estoy de acuerdo</a>', 'info');
         }
-
-
-
+        
         $pag = recogerNumPag();
         $orden = recogerOrden();
         $asc = recogerAsc();

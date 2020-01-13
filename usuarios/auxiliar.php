@@ -82,6 +82,15 @@ function comprobarValoresRegistrar(&$args, $pdo, &$errores)
             $errores['email'] = 'La dirección de e-mail no es válida.';
         }
     }
+
+    if (isset($args['rol'])) {
+        if ($rol === '') {
+            $errores['rol'] = 'El rol es obligatorio.';
+        }
+        if ($rol != 'administrador' || $rol != 'editor') {
+            $errores['rol'] = 'El rol no es valido, (administrador | editor)';
+        }
+    }
 }
 
 function getId($pdo, $usuario) 
@@ -91,3 +100,5 @@ function getId($pdo, $usuario)
     $resultado = $sent->fetch(PDO::FETCH_ASSOC);
     return $resultado['id'];
 }
+
+

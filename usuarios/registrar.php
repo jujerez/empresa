@@ -36,11 +36,22 @@
                 'tipo' => TIPO_CADENA,
                 'etiqueta' => 'Dirección de e-mail',
             ],
+
+            'rol' => [
+                'def' => '',
+                'tipo' => TIPO_CADENA,
+                'etiqueta' => 'Rol de Usuario',
+            ]
         ];
 
-        if (noLogueoObligatorio()) {
-            return;
+        if (!esAdmin()) {
+
+            if (noLogueoObligatorio() ) {
+                
+                return;
+            }
         }
+
 
         barra();
 
@@ -53,24 +64,51 @@
         }
 
         $errores = [];
+        
+
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         $pdo = conectar();
         comprobarValoresRegistrar($args, $pdo, $errores);
-        if (es_POST() && empty($errores)) {
-            $sent = $pdo->prepare('INSERT INTO usuarios (login, password, email)
-                                   VALUES (:login, :password, :email)');
-            if (!$sent->execute([
-                'login' => $args['login'],
-                'password' => password_hash($args['password'], PASSWORD_DEFAULT),
-                'email' => $args['email'] ?: null,
-            ])) {
-                aviso('Ha ocurrido algún problema.', 'danger');
-            } elseif ($sent->rowCount() !== 1) {
-                aviso('Ha ocurrido algún problema.', 'danger');
+
+        var_dump($errores);
+
+        if (esAdmin()) {
+
+            if (es_POST()) {
+                 $sent = $pdo->prepare('INSERT INTO usuarios (login, password, email, rol)
+                                       VALUES (:login, :password, :email, :rol)');
+                if (!$sent->execute([
+                    'login' => $args['login'],
+                    'password' => password_hash($args['password'], PASSWORD_DEFAULT),
+                    'email' => $args['email'] ?: null,
+                    'rol'   => $args['rol']
+                ])) {
+                    aviso('problemom.', 'danger');
+                } elseif ($sent->rowCount() !== 1) {
+                    aviso('Ha ocurrido algún problema.', 'danger');
+                }
+                header('Location: /index.php');
+                return;
             }
-            header('Location: /index.php');
-            return;
-        }
+        } 
+
+        if (es_POST()) {
+            $sent = $pdo->prepare('INSERT INTO usuarios (login, password, email, rol)
+                                  VALUES (:login, :password, :email, :rol)');
+           if (!$sent->execute([
+               'login' => $args['login'],
+               'password' => password_hash($args['password'], PASSWORD_DEFAULT),
+               'email' => $args['email'] ?: null,
+               'rol'   => 'vacio',
+           ])) {
+               aviso('problemita.', 'danger');
+           } elseif ($sent->rowCount() !== 1) {
+               aviso('Ha ocurrido algún problema.', 'danger');
+           }
+           header('Location: /index.php');
+           return;
+       } 
+
         dibujarFormulario($args, PAR, 'Registrar', $pdo, $errores);
         ?>
     <!-- Optional JavaScript -->

@@ -18,6 +18,7 @@ CREATE TABLE usuarios
    , password varchar(255) NOT NULL
    , email    varchar(255) CONSTRAINT email_no_vacia
                            CHECK (email != '')
+   , rol      varchar(255)
 );
 
 DROP TABLE IF EXISTS empleados CASCADE;
@@ -42,8 +43,9 @@ SELECT d.*, COUNT(e.id) AS cantidad, coalesce(round(avg(e.salario),0),2) AS sala
 GROUP BY d.id;
 
 
-INSERT INTO usuarios (login, password, email)
-VALUES ('pepe', crypt('pepe', gen_salt('bf', 12)), 'pepe@pepe.com');
+INSERT INTO usuarios (login, password, email, rol)
+VALUES ('pepe', crypt('pepe', gen_salt('bf', 12)), 'pepe@pepe.com', 'administrador')
+     , ('juan', crypt('juan', gen_salt('bf', 12)), 'pepe@pepe.com', 'editor');
 
 INSERT INTO departamentos (num_dep, dnombre, localidad)
 VALUES (10, 'Contabilidad', 'Sanlúcar')
