@@ -64,7 +64,8 @@
         }
 
         $errores = [];
-        
+        $_csrf = (isset($_POST['_csrf'])) ? $_POST['_csrf'] : null;
+        unset($_POST['_csrf']);
 
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         $pdo = conectar();
