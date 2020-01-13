@@ -75,7 +75,9 @@
 
         if (esAdmin()) {
 
-            if (es_POST()) {
+            if (es_POST() && empty($errores)) {
+                var_dump($_POST);
+                die();
                  $sent = $pdo->prepare('INSERT INTO usuarios (login, password, email, rol)
                                        VALUES (:login, :password, :email, :rol)');
                 if (!$sent->execute([
@@ -84,7 +86,7 @@
                     'email' => $args['email'] ?: null,
                     'rol'   => $args['rol']
                 ])) {
-                    aviso('problemom.', 'danger');
+                    aviso('Ha ocurrido un error .', 'danger');
                 } elseif ($sent->rowCount() !== 1) {
                     aviso('Ha ocurrido algún problema.', 'danger');
                 }
@@ -93,16 +95,16 @@
             }
         } 
 
-        if (es_POST()) {
+        if (es_POST() && empty($errores)) {
             $sent = $pdo->prepare('INSERT INTO usuarios (login, password, email, rol)
                                   VALUES (:login, :password, :email, :rol)');
            if (!$sent->execute([
                'login' => $args['login'],
                'password' => password_hash($args['password'], PASSWORD_DEFAULT),
                'email' => $args['email'] ?: null,
-               'rol'   => 'vacio',
+               'rol'   => null,
            ])) {
-               aviso('problemita.', 'danger');
+               aviso('Ha ocurrido un error.', 'danger');
            } elseif ($sent->rowCount() !== 1) {
                aviso('Ha ocurrido algún problema.', 'danger');
            }

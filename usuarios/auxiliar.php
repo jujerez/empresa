@@ -87,9 +87,12 @@ function comprobarValoresRegistrar(&$args, $pdo, &$errores)
         if ($rol === '') {
             $errores['rol'] = 'El rol es obligatorio.';
         }
-        if ($rol != 'administrador' || $rol != 'editor') {
+        if ($rol != 'administrador' && $rol != 'editor') {
             $errores['rol'] = 'El rol no es valido, (administrador | editor)';
         }
+
+
+
     }
 }
 
