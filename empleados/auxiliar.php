@@ -130,7 +130,12 @@ function comprobarValores(&$args, $id, $pdo, &$errores)
 }
 
 function getNombreDept($id, $pdo) {
-    $sent = $pdo->prepare("SELECT * from departamentos WHERE id = :id");
+    $sent = $pdo->prepare("SELECT * 
+                            FROM empleados e
+                            JOIN (SELECT id AS d_id, num_dep, dnombre, localidad
+                                    FROM departamentos) d             
+                                ON e.departamento_id = d.d_id
+                                where e.id = :id");
     $sent->execute(['id' => $id]);
     $resultado = $sent->fetch(PDO::FETCH_ASSOC);
     return $resultado['dnombre'];
