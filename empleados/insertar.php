@@ -17,9 +17,14 @@
         barra();
 
         $errores = [];
+        $_csrf = (isset($_POST['_csrf'])) ? $_POST['_csrf'] : null;
+        unset($_POST['_csrf']);
+        
         $args = comprobarParametros(PAR, REQ_POST, $errores);
         $pdo = conectar();
         comprobarValores($args, null, $pdo, $errores);
+        var_dump($_POST);
+        
         if (es_POST() && empty($errores)) {
             $sent = $pdo->prepare('INSERT
                                      INTO empleados (num_emp, nombre, salario, departamento_id)

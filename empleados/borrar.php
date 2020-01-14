@@ -30,7 +30,7 @@
         $pdo = conectar();
 
         
-        if(getNombreDept($id,$pdo)!=='Contabilidad') {
+        if(getNombreDept($id,$pdo)!=='Contabilidad' || esAdmin()) {
             if (es_POST()) {
 
                 unset($id);
